@@ -1,0 +1,100 @@
+body {
+  background-color: #fff;
+}
+#wrapper {
+  position: absolute;
+  top: 45px;
+  bottom: 53px;
+  left: 0;
+  width: 100%;
+  background-color: #efeff3;
+}
+#wrapper ul {
+  background-color: #efeff3;
+}
+#wrapper ul::before {
+  height: 0;
+}
+#wrapper ul::after {
+  height: 0;
+}
+#wrapper ul li {
+  height: 42px;
+  line-height: 42px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-bottom: 1px solid #e7e7e7;
+  background-color: #fff;
+}
+#wrapper ul li div.fr {
+  width: 70%;
+  height: 50px;
+}
+#wrapper ul li div.fr .mui-icon {
+  font-size: 18px;
+  color: #21bdf9;
+}
+#wrapper ul li div.fr input[type=number],
+#wrapper ul li div.fr input[type=text] {
+  height: 30px;
+  line-height: 30px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  text-align: right;
+}
+#wrapper ul li::after {
+  height: 0;
+}
+#wrapper ul li textarea {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 12px;
+}
+.surebox {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  border-top: 1px solid #c8c7cc;
+}
+.surebox button.sure {
+  height: 40px;
+  line-height: 10px;
+  width: 90%;
+  margin: 6px auto;
+}
+.mui-pciker-list li {
+  font-size: 0.8pc;
+}
+.starflag::after {
+  content: "*";
+  color: red;
+  font-size: 0.8pc;
+}
+#picbtn {
+  height: 80px !important;
+}
+#picbtn div {
+  color: #000;
+  height: 80px;
+  line-height: 80px;
+}
+#picbtn a {
+  margin: 0;
+  padding: 0;
+  color: #21BDF9;
+}
+#picbtn a span.photobox {
+  height: 75px;
+  margin-top: 2px;
+  display: inline-block;
+}
+#picbtn a span.photobox img {
+  height: 75px;
+  vertical-align: middle;
+}
+#picbtn a span.photoicon {
+  vertical-align: middle;
+}

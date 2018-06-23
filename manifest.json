@@ -1,0 +1,406 @@
+{
+	"@platforms": [
+		"android",
+		"iPhone",
+		"iPad"
+	],
+	"id": "H5F6E95F3",/*应用的标识，创建应用时自动生成，勿手动修改*/
+	"name": "nongjiayun",/*应用名称，程序桌面图标名称*/
+	"version": {
+		"name": "1.0.0",/*应用版本名称*/
+		"code": "83"
+	},
+	"description": "",/*应用描述信息*/
+	"icons": {
+		"72": "icon.png"
+	},
+	"launch_path": "index.html",/*应用的入口页面，默认为根目录下的index.html；支持网络地址，必须以http://或https://开头*/
+	"developer": {
+		"name": "",/*开发者名称*/
+		"email": "",/*开发者邮箱地址*/
+		"url": "http://www.dcloud.io"
+	},
+	"permissions": {
+		"Accelerometer": {
+			"description": "访问加速度感应器"
+		},
+		"Audio": {
+			"description": "访问麦克风"
+		},
+		"Cache": {
+			"description": "管理应用缓存"
+		},
+		"Camera": {
+			"description": "访问摄像头"
+		},
+		"Console": {
+			"description": "跟踪调试输出日志"
+		},
+		"Contacts": {
+			"description": "访问系统联系人信息"
+		},
+		"Device": {
+			"description": "访问设备信息"
+		},
+		"Downloader": {
+			"description": "文件下载管理"
+		},
+		"Events": {
+			"description": "应用扩展事件"
+		},
+		"File": {
+			"description": "访问本地文件系统"
+		},
+		"Gallery": {
+			"description": "访问系统相册"
+		},
+		"Geolocation": {
+			"description": "访问位置信息"
+		},
+		"Invocation": {
+			"description": "使用Native.js能力"
+		},
+		"Messaging": {
+			"description": "访问通讯能力"
+		},
+		"Orientation": {
+			"description": "访问方向感应器"
+		},
+		"Proximity": {
+			"description": "访问距离感应器"
+		},
+		"Storage": {
+			"description": "管理应用本地数据"
+		},
+
+		"Uploader": {
+			"description": "管理文件上传任务"
+		},
+		"Runtime": {
+			"description": "访问运行期环境"
+		},
+		"XMLHttpRequest": {
+			"description": "跨域网络访问"
+		},
+		"Zip": {
+			"description": "文件压缩与解压缩"
+		},
+		"Barcode": {
+			"description": "管理二维码扫描插件"
+		},
+
+		"Speech": {
+			"description": "管理语音识别插件"
+		},
+		"Webview": {
+			"description": "窗口管理"
+		},
+		"NativeUI": {
+			"description": "原生UI控件"
+		},
+		"Navigator": {
+			"description": "浏览器信息"
+		},
+		"NativeObj": {
+			"description": "原生对象"
+		},
+		"Maps": {
+			"description": "管理地图插件"
+		}
+	},
+	"plus": {
+		"splashscreen": {
+			"autoclose": true,/*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
+			"waiting": true
+		},
+		"runmode": "liberate",/*应用的首次启动运行模式，可取liberate或normal，liberate模式在第一次启动时将解压应用资源（Android平台File API才可正常访问_www目录）*/
+		"signature": "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==",/*可选，保留给应用签名，暂不使用*/
+		"distribute": {
+			"plugins": {
+				"maps": {
+					"baidu": {
+						"appkey_ios": "I0aZXRPL2mqtUp7wPHnQxiXXM7e217Ru",
+						"appkey_android": "gftestDBkh9fAwjxU07Q7OCjH2vyHg88",
+						"appkey": "",
+						"description": "百度地图"
+					}
+				}
+			},
+			"apple": {
+				"appid": "",/*iOS应用标识，苹果开发网站申请的appid，如io.dcloud.HelloH5*/
+				"mobileprovision": "",/*iOS应用打包配置文件*/
+				"password": "",/*iOS应用打包个人证书导入密码*/
+				"p12": "",/*iOS应用打包个人证书，打包配置文件关联的个人证书*/
+				"devices": "universal",/*iOS应用支持的设备类型，可取值iphone/ipad/universal*/
+				"frameworks": []
+			},
+			"google": {
+				"packagename": "",/*Android应用包名，如io.dcloud.HelloH5*/
+				"keystore": "",/*Android应用打包使用的密钥库文件*/
+				"password": "",/*Android应用打包使用密钥库中证书的密码*/
+				"aliasname": "",/*Android应用打包使用密钥库中证书的别名*/
+				"permissions": [
+					"<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+					"<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+					"<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+					"<uses-permission android:name=\"com.android.launcher.permission.INSTALL_SHORTCUT\"/>",
+					"<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+					"<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+					"<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+					"<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+					"<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+					"<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+					"<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+					"<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+					"<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+					"<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+					"<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+					"<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+					"<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+					"<uses-feature android:name=\"android.hardware.camera\"/>",
+					"<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+					"<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+					"<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+					"<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+					"<uses-permission android:name=\"com.android.launcher.permission.UNINSTALL_SHORTCUT\"/>",
+					"<uses-permission android:name=\"android.permission.CAMERA\"/>"
+				]
+			},
+			"orientation": [
+				"portrait-primary",
+				"portrait-secondary"
+			],/*应用支持的方向，portrait-primary：竖屏正方向；portrait-secondary：竖屏反方向；landscape-primary：横屏正方向；landscape-secondary：横屏反方向*/
+			"icons": {
+				"ios": {
+					"prerendered": true, /*应用图标是否已经高亮处理，在iOS6及以下设备上有效*/
+					"auto": "", /*应用图标，分辨率：512x512，用于自动生成各种尺寸程序图标*/
+					"iphone": {
+						"normal": "",/*iPhone普通屏幕程序图标，分辨率：57x57*/
+						"retina": "",/*iPhone高分屏程序图标，分辨率：114x114*/
+						"retina7": "",/*iPhone iOS7高分屏程序图标，分辨率：120x120*/
+						"spotlight-normal": "", /*iPhone Spotlight搜索程序图标，分辨率：29x29*/
+						"spotlight-retina": "", /*iPhone高分屏Spotlight搜索程序图标，分辨率：58x58*/
+						"spotlight-retina7": "",/*iPhone iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*/
+						"settings-normal": "", /*iPhone设置页面程序图标，分辨率：29x29*/
+						"settings-retina": ""
+					},
+					"ipad": {
+						"normal": "", /*iPad普通屏幕程序图标，分辨率：72x72*/
+						"retina": "", /*iPad高分屏程序图标，分辨率：144x144*/
+						"normal7": "", /*iPad iOS7程序图标，分辨率：76x76*/
+						"retina7": "", /*iPad iOS7高分屏程序图标，分辨率：152x152*/
+						"spotlight-normal": "", /*iPad Spotlight搜索程序图标，分辨率：50x50*/
+						"spotlight-retina": "", /*iPad高分屏Spotlight搜索程序图标，分辨率：100x100*/
+						"spotlight-normal7": "",/*iPad iOS7 Spotlight搜索程序图标，分辨率：40x40*/
+						"spotlight-retina7": "",/*iPad iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*/
+						"settings-normal": "",/*iPad设置页面程序图标，分辨率：29x29*/
+						"settings-retina": ""
+					}
+				},
+				"android": {
+					"mdpi": "", /*普通屏程序图标，分辨率：48x48*/
+					"ldpi": "", /*大屏程序图标，分辨率：48x48*/
+					"hdpi": "", /*高分屏程序图标，分辨率：72x72*/
+					"xhdpi": "",/*720P高分屏程序图标，分辨率：96x96*/
+					"xxhdpi": ""
+				}
+			},
+			"splashscreen": {
+				"ios": {
+					"iphone": {
+						"default": "", /*iPhone3启动图片选，分辨率：320x480*/
+						"retina35": "",/*3.5英寸设备(iPhone4)启动图片，分辨率：640x960*/
+						"retina40": ""
+					},
+					"ipad": {
+						"portrait": "", /*iPad竖屏启动图片，分辨率：768x1004*/
+						"portrait-retina": "",/*iPad高分屏竖屏图片，分辨率：1536x2008*/
+						"landscape": "", /*iPad横屏启动图片，分辨率：1024x748*/
+						"landscape-retina": "", /*iPad高分屏横屏启动图片，分辨率：2048x1496*/
+						"portrait7": "", /*iPad iOS7竖屏启动图片，分辨率：768x1024*/
+						"portrait-retina7": "",/*iPad iOS7高分屏竖屏图片，分辨率：1536x2048*/
+						"landscape7": "", /*iPad iOS7横屏启动图片，分辨率：1024x768*/
+						"landscape-retina7": ""
+					}
+				},
+				"android": {
+					"mdpi": "", /*普通屏启动图片，分辨率：240x282*/
+					"ldpi": "", /*大屏启动图片，分辨率：320x442*/
+					"hdpi": "", /*高分屏启动图片，分辨率：480x762*/
+					"xhdpi": "", /*720P高分屏启动图片，分辨率：720x1242*/
+					"xxhdpi": ""
+				}
+			}
+		}
+	},
+	"dependencies": {
+		"pages": {
+			"index.html": {
+				"resources": [
+					"images/three.jpg",
+					"css/index.css",
+					"images/one.jpg",
+					"images/two.jpg",
+					"js/vdn.js",
+					"js/template.js",
+					"js/mui.js",
+					"css/mui.css",
+					"js/jquery-2.1.4.min.js"
+				],
+				"refer": [
+					"dataInput.html",
+					"archivesManager.html"
+				],
+				"priority": 0
+			},
+			"dataInput.html": {
+				"resources": [
+					"css/base.css",
+					"fonts/mui.ttf",
+					"css/mui.min.css",
+					"css/dataInput.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"archivesManager.html": {
+				"resources": [
+					"js/demoUtils.js",
+					"js/iscroll.js",
+					"css/archivesManager.css"
+				],
+				"refer": [],
+				"priority": 0
+			}
+		},
+		"idle": {
+			"resources": [
+				"Source/Files/20171104125955073073.f",
+				"Source/Files/20171104125955090085.f",
+				"Source/Files/20171104125954997026.f",
+				"login.html",
+				"Source/Files/20171104125955064067.f",
+				"Source/Files/20171104125955005033.f",
+				"Source/Files/20171104125955072072.f",
+				"js/common.js",
+				"analysisList.html",
+				"Source/Files/20171111212844006005.f",
+				"Source/Files/his.cab",
+				"Source/Files/20171104125955115100.f",
+				"Source/Files/20171104125955003030.f",
+				"Source/Files/20171104125955138109.f",
+				"Source/Files/20171104125955003031.f",
+				"Source/Files/20171104125955104096.f",
+				"Source/Files/20171116104857566001.f",
+				"Source/Files/20171104125955126106.f",
+				"Source/Files/20171104125955113098.f",
+				"Source/Files/20171104125955114099.f",
+				"Source/Files/20171104125955087083.f",
+				"Source/Files/20171104125954981019.f",
+				"Source/Files/20171111212312105001.f",
+				"Source/Files/20171104125955081079.f",
+				"Source/Files/20171104125954957003.f",
+				"Source/Files/20171104125954991023.f",
+				"css/dataInput.less",
+				"Source/Files/20171109142133333001.f",
+				"Source/Files/20171104125955001028.f",
+				"Source/Files/20171104125955079078.f",
+				"Source/Files/20171104125955023037.f",
+				"Source/Files/20171104125955039051.f",
+				"pipixiaxia",
+				"js/mui.min.js",
+				"css/common.css",
+				"images/icon1.jpg",
+				"Source/Files/20171104125955026039.f",
+				"Source/Files/20171104125955067069.f",
+				"Source/Files/20171104125955084081.f",
+				"Source/Files/20171104125955092087.f",
+				"Source/Files/20171113103538600001.f",
+				"Source/Files/20171104125955043054.f",
+				"Source/Files/20171104125955024038.f",
+				"Source/Files/20171104125955037049.f",
+				"Source/Files/20171104125955063066.f",
+				"Source/Files/20171104125955070070.f",
+				"Source/Files/20171104125955078077.f",
+				"Source/Files/20171104125955054061.f",
+				"Source/Files/20171104125955103095.f",
+				"Source/Files/20171028210652737038.f",
+				"Source/Files/20171104125955002029.f",
+				"Source/Files/20171104125955100094.f",
+				"Source/Files/20171104125955141111.f",
+				"Source/Files/20171104125954980018.f",
+				"Source/Files/20171104125954981020.f",
+				"Source/Files/20171104125955032044.f",
+				"Source/Files/20171104125955139110.f",
+				"Source/Files/20171104125955123104.f",
+				"Source/Files/20171104125955085082.f",
+				"Source/Files/20171104125955040052.f",
+				"Source/Files/20171104125955034046.f",
+				"Source/Files/20171104125954995025.f",
+				"Source/Files/20171104125955038050.f",
+				"Source/Source.cab",
+				"Source/Files/20171104125955099093.f",
+				"Source/Files/20171104125954998027.f",
+				"Source/Files/20171104125955071071.f",
+				"Source/Files/20171104125955029041.f",
+				"Source/Files/20171104125955031043.f",
+				"Source/project.inf",
+				"Source/Files/20171104125955008035.f",
+				"Source/Files/20171104125955116101.f",
+				"Source/Files/20171104125955093088.f",
+				"css/archivesManager.less",
+				"Source/Files/20171104125955142112.f",
+				"Source/Files/20171104125955055062.f",
+				"js/immersed.js",
+				"Source/Files/20171028210649991037.f",
+				"pipixiaxia.pub",
+				"Source/Files/20171104125955049058.f",
+				"Source/Files/20171114225913565001.f",
+				"Source/Files/20171104125955042053.f",
+				"Source/Files/20171104125955045055.f",
+				"css/index.less",
+				"Source/Files/20171114152447897001.f",
+				"Source/Files/20171104125955030042.f",
+				"Source/Files/20171104125955059064.f",
+				"Source/Files/20171104125955052060.f",
+				"Source/Files/20171104125955057063.f",
+				"Source/Files/20171104125955006034.f",
+				"Source/Files/20171104125954978017.f",
+				"Source/Files/20171109113929938001.f",
+				"Source/Files/20171104125955096090.f",
+				"Source/Files/20171104125955004032.f",
+				"Source/Files/20171104125955074074.f",
+				"Source/Files/20171104125955061065.f",
+				"Source/Files/20171104125955035047.f",
+				"Source/Files/20171104125955088084.f",
+				"Source/Files/20171104125955097091.f",
+				"Source/Files/20171104125955036048.f",
+				"Source/Files/20171104125955075075.f",
+				"Source/Files/20171104125955066068.f",
+				"Source/Files/20171113151107214002.f",
+				"Source/Files/20171104125955076076.f",
+				"WebTest.mdb",
+				"Source/Files/20171111212834408004.f",
+				"Source/Files/20171104125955098092.f",
+				"Source/Files/20171104125955125105.f",
+				"Source/Files/20171104125955051059.f",
+				"Source/Files/20171104125955121103.f",
+				"Source/Files/20171104125954993024.f",
+				"Source/Files/20171104125955119102.f",
+				"Source/Files/20171104125955028040.f",
+				"Source/Files/20171104125955091086.f",
+				"Source/Files/20171113150949920001.f",
+				"Source/Files/20171104125955046056.f",
+				"Source/Files/20171104125955095089.f",
+				"images/icon2.png",
+				"Source/Files/20171104125955033045.f",
+				"Source/Files/20171104125954958004.f",
+				"css/app.css",
+				"Source/Files/20171104125955048057.f",
+				"Source/Files/20171114153123449002.f",
+				"Source/Files/20171104125955082080.f",
+				"Source/Files/20171104125954954001.f"
+			]
+		}
+	}
+}

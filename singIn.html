@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/singIn.css" />
+		<link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">签到</h1>
+		</header>
+		<div class="container">
+			<p class="info">
+				<span class="date-info">
+					<i class="mui-icon-extra mui-icon-extra-outline"></i>
+					<span class="date"></span>
+				</span>
+				<span class="addr-info">
+					<i class="mui-icon-extra mui-icon-extra-rank"></i>
+					<span class="addr">当前企业:</span>
+				</span>
+			</p>
+			<div class="map-con">
+				<p class="map-name"></p>
+				<div id="map" class="map"></div>
+			</div>
+			<div class="visit-info">
+				<span class="visitor fl">拜访对象</span>
+				<input class="visitor-name" type="text fl" placeholder="请选择或输入" />
+				<span class="sel fr mui-icon-extra mui-icon-extra-addpeople"></span>
+			</div>
+			<div class="signin-info">
+				<div id="signIn" class="sign-in">
+					<div class="sign">签到</div>
+					<div class="timer"></div>
+				</div>
+				<p class="tip">今日你还未签到</p>
+			</div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/global.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sw9PK3GKn4SflSLE39OG2xoSlTGfSBgB"></script>
+		<script>
+			$(".date").html(getNowDate());
+			$(".timer").html(getHourMinute());
+
+			var longitude = 0;
+			var latitude = 0;
+			var addr = "";
+			var name = "";
+
+			getMap("map", function(res) {
+				$(".map-name").html(res.addr);
+				var position = {
+					"longitude": res.lng,
+					"latitude": res.lat,
+					"addr": res.addr,
+					"name": $(".visitor-name").val()
+				}
+			});
+
+			document.getElementById("signIn").addEventListener("tap", function() {
+				var position = {
+					"longitude": longitude,
+					"latitude": latitude,
+					"addr": addr,
+					"name": $(".visitor-name").val()
+				}
+			});
+		</script>
+	</body>
+
+</html>

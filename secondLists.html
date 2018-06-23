@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农家云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/secondList.css" />
+		<style type="text/css">
+			#wrapper {
+				position: absolute;
+				top: 106px;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+			}
+			
+			#pullDown,
+			#pullUp {
+				padding: 0 10px;
+				height: 30px;
+				line-height: 30px;
+				color: #888;
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">种猪档案管理</h1>
+			<a class="set mui-icon mui-icon-plus mui-pull-right"></a>
+		</header>
+		<!--搜索框-->
+		<div class="search">
+			<div class="inner">
+				<i class="left mui-icon mui-icon-search"></i>
+				<input type="text" class="mui-input-clear fl" placeholder="耳标 / 栋舍">
+				<input type="text" readonly unselectable="on" class="all mui-input-clear fr" placeholder="全部(606)">
+				<i class="right mui-icon mui-icon-arrowdown"></i>
+			</div>
+		</div>
+		<div id="wrapper">
+			<div id="scroller">
+				<div id="pullDown">
+					<span class="pullDownLabel">下拉刷新</span>
+				</div>
+				<ul id="thelist" class="outer mui-table-view mui-table-view-chevron">
+					<li class="managerli">
+						<!--列表标题-->
+						<div class="tit">
+							<div class="titl fl">
+								<span class="basec">种猪耳标:</span>
+								<span class="basec">Ly6064</span>
+							</div>
+							<div class="titr fr">
+								<!--备注-->
+								<span class="remark">备注</span>
+								<!--修改-->
+								<span class="modify">修改</span>
+								<!--删除-->
+								<span class="del">删除</span>
+							</div>
+						</div>
+						<!--列表内容-->
+						<div class="con">
+							<ul class="inner gray">
+								<li class="clearfloat">
+									<div class="gender fl">
+										<span>性别:</span><span>母猪</span>
+									</div>
+									<div class="type fr">
+										<span>品种:</span><span>LY(长大)</span>
+									</div>
+								</li>
+								<li class="clearfloat">
+									<div class="age fl">
+										<span>胎龄:</span><span>4</span>
+									</div>
+									<div class="birthday fr">
+										<span>出生日期:</span><span>2015-08-23</span>
+									</div>
+								</li>
+								<li>
+									<div class="doornum">
+										<span>栋舍:</span><span>配怀PH02栋</span>
+									</div>
+								</li>
+								<li>
+									<div class="status">
+										<span>当前状态:</span><span>怀孕122天预产期2017-11-20</span>
+									</div>
+								</li>
+								<li>
+									<div class="beizhu">
+										<span>备注:</span><span>无</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="managerli">
+						<!--列表标题-->
+						<div class="tit">
+							<div class="titl fl">
+								<span class="basec">种猪耳标:</span>
+								<span class="basec">Ly6064</span>
+							</div>
+							<div class="titr fr">
+								<!--备注-->
+								<span class="remark">备注</span>
+								<!--修改-->
+								<span class="modify">修改</span>
+								<!--删除-->
+								<span class="del">删除</span>
+							</div>
+						</div>
+						<!--列表内容-->
+						<div class="con">
+							<ul class="inner gray">
+								<li class="clearfloat">
+									<div class="gender fl">
+										<span>性别:</span><span>母猪</span>
+									</div>
+									<div class="type fr">
+										<span>品种:</span><span>LY(长大)</span>
+									</div>
+								</li>
+								<li class="clearfloat">
+									<div class="age fl">
+										<span>胎龄:</span><span>4</span>
+									</div>
+									<div class="birthday fr">
+										<span>出生日期:</span><span>2015-08-23</span>
+									</div>
+								</li>
+								<li>
+									<div class="doornum">
+										<span>栋舍:</span><span>配怀PH02栋</span>
+									</div>
+								</li>
+								<li>
+									<div class="status">
+										<span>当前状态:</span><span>怀孕122天预产期2017-11-20</span>
+									</div>
+								</li>
+								<li>
+									<div class="beizhu">
+										<span>备注:</span><span>无</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="managerli">
+						<!--列表标题-->
+						<div class="tit">
+							<div class="titl fl">
+								<span class="basec">种猪耳标:</span>
+								<span class="basec">Ly6064</span>
+							</div>
+							<div class="titr fr">
+								<!--备注-->
+								<span class="remark">备注</span>
+								<!--修改-->
+								<span class="modify">修改</span>
+								<!--删除-->
+								<span class="del">删除</span>
+							</div>
+						</div>
+						<!--列表内容-->
+						<div class="con">
+							<ul class="inner gray">
+								<li class="clearfloat">
+									<div class="gender fl">
+										<span>性别:</span><span>母猪</span>
+									</div>
+									<div class="type fr">
+										<span>品种:</span><span>LY(长大)</span>
+									</div>
+								</li>
+								<li class="clearfloat">
+									<div class="age fl">
+										<span>胎龄:</span><span>4</span>
+									</div>
+									<div class="birthday fr">
+										<span>出生日期:</span><span>2015-08-23</span>
+									</div>
+								</li>
+								<li>
+									<div class="doornum">
+										<span>栋舍:</span><span>配怀PH02栋</span>
+									</div>
+								</li>
+								<li>
+									<div class="status">
+										<span>当前状态:</span><span>怀孕122天预产期2017-11-20</span>
+									</div>
+								</li>
+								<li>
+									<div class="beizhu">
+										<span>备注:</span><span>无</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="managerli">
+						<!--列表标题-->
+						<div class="tit">
+							<div class="titl fl">
+								<span class="basec">种猪耳标:</span>
+								<span class="basec">Ly6064</span>
+							</div>
+							<div class="titr fr">
+								<!--备注-->
+								<span class="remark">备注</span>
+								<!--修改-->
+								<span class="modify">修改</span>
+								<!--删除-->
+								<span class="del">删除</span>
+							</div>
+						</div>
+						<!--列表内容-->
+						<div class="con">
+							<ul class="inner gray">
+								<li class="clearfloat">
+									<div class="gender fl">
+										<span>性别:</span><span>母猪</span>
+									</div>
+									<div class="type fr">
+										<span>品种:</span><span>LY(长大)</span>
+									</div>
+								</li>
+								<li class="clearfloat">
+									<div class="age fl">
+										<span>胎龄:</span><span>4</span>
+									</div>
+									<div class="birthday fr">
+										<span>出生日期:</span><span>2015-08-23</span>
+									</div>
+								</li>
+								<li>
+									<div class="doornum">
+										<span>栋舍:</span><span>配怀PH02栋</span>
+									</div>
+								</li>
+								<li>
+									<div class="status">
+										<span>当前状态:</span><span>怀孕122天预产期2017-11-20</span>
+									</div>
+								</li>
+								<li>
+									<div class="beizhu">
+										<span>备注:</span><span>无</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="managerli">
+						<!--列表标题-->
+						<div class="tit">
+							<div class="titl fl">
+								<span class="basec">种猪耳标:</span>
+								<span class="basec">Ly6064</span>
+							</div>
+							<div class="titr fr">
+								<!--备注-->
+								<span class="remark">备注</span>
+								<!--修改-->
+								<span class="modify">修改</span>
+								<!--删除-->
+								<span class="del">删除</span>
+							</div>
+						</div>
+						<!--列表内容-->
+						<div class="con">
+							<ul class="inner gray">
+								<li class="clearfloat">
+									<div class="gender fl">
+										<span>性别:</span><span>母猪</span>
+									</div>
+									<div class="type fr">
+										<span>品种:</span><span>LY(长大)</span>
+									</div>
+								</li>
+								<li class="clearfloat">
+									<div class="age fl">
+										<span>胎龄:</span><span>4</span>
+									</div>
+									<div class="birthday fr">
+										<span>出生日期:</span><span>2015-08-23</span>
+									</div>
+								</li>
+								<li>
+									<div class="doornum">
+										<span>栋舍:</span><span>配怀PH02栋</span>
+									</div>
+								</li>
+								<li>
+									<div class="status">
+										<span>当前状态:</span><span>怀孕122天预产期2017-11-20</span>
+									</div>
+								</li>
+								<li>
+									<div class="beizhu">
+										<span>备注:</span><span>无</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+				<div id="pullUp">
+					<span class="pullUpLabel">上拉加载更多</span>
+				</div>
+			</div>
+		</div>
+		<!--遮罩-->
+		<div class="maskbottom mui-backdrop"></div>
+		<!--大的遮罩弹出层-->
+		<div class="masktop alertMask">
+			<!--请选择-->
+			<div class="top">请选择</div>
+			<!--选择项-->
+			<div class="center">
+				<div class="myscroll mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="lists mui-table-view ">
+							<li class="mui-table-view-cell">全部(606)</li>
+							<li class="mui-table-view-cell">怀孕(473)</li>
+							<li class="mui-table-view-cell">哺乳(98)</li>
+							<li class="mui-table-view-cell">断奶空怀(24)</li>
+							<li class="mui-table-view-cell">返情空怀(0)</li>
+							<li class="mui-table-view-cell">B超鉴定空怀(0)</li>
+							<li class="mui-table-view-cell">全部(606)</li>
+							<li class="mui-table-view-cell">怀孕(473)</li>
+							<li class="mui-table-view-cell">哺乳(98)</li>
+							<li class="mui-table-view-cell">断奶空怀(24)</li>
+							<li class="mui-table-view-cell">返情空怀(0)</li>
+							<li class="mui-table-view-cell">B超鉴定空怀(0)</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!--底部-->
+			<div class="bottom">
+				<div class="more fr">上下滑动查看更多</div>
+			</div>
+		</div>
+		<!--小的遮罩弹出层-->
+		<div class="littlemask">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell">添加新种猪</li>
+						<li class="mui-table-view-cell">设定产仔提醒时间</li>
+						<li class="mui-table-view-cell">设定断奶提醒时间</li>
+						<li class="mui-table-view-cell">设定孕检(B超)时间</li>
+						<li class="mui-table-view-cell">设定种猪淘汰标准</li>
+						<li class="mui-table-view-cell">设定异常报警</li>
+						<li class="mui-table-view-cell">添加种猪新栋舍</li>
+						<li class="mui-table-view-cell">录入数据查询与修改</li>
+						<li class="mui-table-view-cell">1231231231</li>
+						<li class="mui-table-view-cell">添加种猪新栋舍</li>
+						<li class="mui-table-view-cell">录入数据查询与修改</li>
+						<li class="mui-table-view-cell">1231231231</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.js"></script>
+	<script src="js/jquery-2.1.4.min.js"></script>
+	<script src="js/iscroll.js"></script>
+	<script src="js/demoUtils.js"></script>
+	<script>
+		var myScroll, pullDownEl, pullDownOffset, pullUpEl, pullUpOffset, generatedCount = 0;
+
+		function loaded() {
+			//动画部分  
+			pullDownEl = document.getElementById('pullDown');
+			pullDownOffset = pullDownEl.offsetHeight;
+			pullUpEl = document.getElementById('pullUp');
+			pullUpOffset = pullUpEl.offsetHeight;
+			myScroll = new iScroll('wrapper', {
+				useTransition: true,
+				topOffset: pullDownOffset,
+				onRefresh: function() {
+					if(pullDownEl.className.match('loading')) {
+						pullDownEl.className = '';
+						pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新';
+					} else if(pullUpEl.className.match('loading')) {
+						pullUpEl.className = '';
+						pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多';
+					}
+				},
+				onScrollMove: function() {
+
+					if(this.y > 5 && !pullDownEl.className.match('flip')) {
+						pullDownEl.className = 'flip';
+						pullDownEl.querySelector('.pullDownLabel').innerHTML = '释放刷新';
+						this.minScrollY = 0;
+					} else if(this.y < 5 && pullDownEl.className.match('flip')) {
+						pullDownEl.className = '';
+						pullDownEl.querySelector('.pullDownLabel').innerHTML = 'Pull down to refresh...';
+						this.minScrollY = -pullDownOffset;
+					} else if(this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+						pullUpEl.className = 'flip';
+						pullUpEl.querySelector('.pullUpLabel').innerHTML = '释放刷新';
+						this.maxScrollY = this.maxScrollY;
+					} else if(this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+						pullUpEl.className = '';
+						pullUpEl.querySelector('.pullUpLabel').innerHTML = 'Pull up to load more...';
+						this.maxScrollY = pullUpOffset;
+					}
+				},
+				onScrollEnd: function() {
+					if(pullDownEl.className.match('flip')) {
+						pullDownEl.className = 'loading';
+						pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中';
+						pullDownAction(); // Execute custom function (ajax call?)  
+					} else if(pullUpEl.className.match('flip')) {
+						pullUpEl.className = 'loading';
+						pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中';
+						pullUpAction(); // Execute custom function (ajax call?)  
+					}
+				}
+			});
+
+			loadAction();
+		}
+		document.addEventListener('touchmove', function(e) {
+			e.preventDefault();
+		}, false); //阻止冒泡  
+		document.addEventListener('DOMContentLoaded', function() {
+			setTimeout(loaded, 0);
+		}, false);
+
+		//初始状态，加载数据  
+		function loadAction() {
+			//			var el, li;
+			//			el = document.getElementById('thelist');
+			//			for(i = 0; i < 10; i++) {
+			//				li = document.createElement('li');
+			//				li.innerText = '初始数据--' + (++generatedCount);
+			//				el.appendChild(li, el.childNodes[0]);
+			//			}
+			myScroll.refresh();
+		}
+
+		//下拉刷新当前数据  
+		function pullDownAction() {
+			setTimeout(function() {
+				//这里执行刷新操作  
+
+				myScroll.refresh(); 
+			}, 400);
+		}
+
+		//上拉加载更多数据  
+		function pullUpAction() {
+			setTimeout(function() {
+				//				var el, li;
+				//				el = document.getElementById('thelist');
+				//				for(i = 0; i < 10; i++) {
+				//					li = document.createElement('li');
+				//					li.innerText = '上拉加载--' + (++generatedCount);
+				//					el.appendChild(li, el.childNodes[0]);
+				//				}
+				myScroll.refresh();
+			}, 400);
+		}
+
+		//			点击全部弹出大下拉框遮罩
+		$(".all")[0].addEventListener("tap", function() {
+			$(".maskbottom").fadeIn(200);
+			$(".masktop").fadeIn(200);
+		});
+
+		//			将列表选中项放入大下拉框
+		$(".lists").children("li").click(function() {
+			$(".all").prop("placeholder", $(this).html());
+			$(".maskbottom").fadeOut(200);
+			$(".masktop").fadeOut(200);
+		});
+
+		//			关闭大下拉框的遮罩
+		$(".maskbottom")[0].addEventListener("tap", function() {
+			$(".maskbottom").fadeOut(200);
+			$(".masktop").fadeOut(200);
+		})
+
+		//			点击加号弹出小下拉框遮罩
+		$(".set").click(function(e) {
+			e.preventDefault();
+			$(".maskbottom").fadeIn(200);
+			$(".littlemask").fadeIn(200);
+		})
+
+		//			关闭小下拉框的遮罩
+		$(".maskbottom")[0].addEventListener("tap", function() {
+			$(".maskbottom").fadeOut(200);
+			$(".littlemask").fadeOut(200);
+		})
+		
+//		初始化mui中scroll区域控件
+		mui('.mui-scroll-wrapper').scroll({
+			deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+		});
+	</script>
+
+</html>

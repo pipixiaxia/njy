@@ -1,0 +1,275 @@
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  background-color: #efeff4;
+}
+p {
+  text-indent: 22px;
+}
+span.mui-icon {
+  font-size: 14px;
+  color: #007aff;
+  margin-left: -15px;
+  padding-right: 10px;
+}
+.mui-off-canvas-right {
+  color: #fff;
+}
+.title {
+  margin: 35px 15px 10px;
+}
+.title + .content {
+  margin: 10px 15px 35px;
+  color: #bbb;
+  text-indent: 1em;
+  font-size: 14px;
+  line-height: 24px;
+}
+input {
+  color: #000;
+}
+.innerul {
+  display: none;
+}
+.mui-table-view-cell {
+  padding: 0;
+  line-height: 40px;
+}
+.mui-table-view-cell::after {
+  left: 0;
+}
+.mui-table-view-cell div {
+  background-color: gainsboro;
+}
+ul {
+  padding-left: 0;
+}
+ul li {
+  list-style: none;
+}
+.continer {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.continer .startDate {
+  height: 42px;
+  line-height: 42px;
+  margin-top: 14px;
+  background-color: #fff;
+  color: #000;
+  border-radius: 6px;
+  width: 100%;
+  box-shadow: 0px 2px 2px #D0D0D0, 2px 0px 2px #D0D0D0;
+}
+.continer .startDate .font {
+  text-align: left;
+  position: absolute;
+  left: 8px;
+}
+.continer .startDate .date {
+  text-align: center;
+  position: absolute;
+  left: 35%;
+}
+.continer .startDate .calendar {
+  font-size: 26px;
+  text-align: right;
+  position: absolute;
+  right: 16px;
+  color: #5ad1d8;
+  line-height: 42px;
+}
+.continer .endDate {
+  height: 42px;
+  margin-top: 14px;
+  line-height: 42px;
+  background-color: #fff;
+  color: #000;
+  border-radius: 6px;
+  width: 100%;
+  box-shadow: 0px 2px 2px #D0D0D0, 2px 0px 2px #D0D0D0;
+}
+.continer .endDate .font {
+  text-align: left;
+  position: absolute;
+  left: 8px;
+}
+.continer .endDate .date {
+  text-align: center;
+  position: absolute;
+  left: 35%;
+}
+.continer .endDate .calendar {
+  font-size: 26px;
+  text-align: right;
+  position: absolute;
+  right: 16px;
+  color: #9fda4e;
+  line-height: 42px;
+}
+.continer .sure {
+  width: 100%;
+  height: 42px;
+  line-height: 42px;
+  background-color: #00ade7;
+  text-align: center;
+  border-radius: 6px;
+  color: #000;
+  margin-bottom: 20px;
+}
+.continer .excel {
+  width: 100%;
+  height: 42px;
+  line-height: 42px;
+  background-color: #4ed59b;
+  text-align: center;
+  border-radius: 6px;
+  color: #000;
+}
+.mui-dtpicker {
+  right: 0 !important;
+  width: 80% !important;
+}
+.mui-poppicker {
+  right: 0 !important;
+  width: 80% !important;
+}
+#offCanvasSide {
+  width: 80%;
+  background-color: #e5e5e5;
+}
+#table-count {
+  padding: 2px 2px 0 2px;
+}
+#table-count table {
+  line-height: 15px;
+  padding: 0 !important;
+  width: 100%;
+  margin: 0 auto;
+  background: #fff;
+}
+#wrapper {
+  position: absolute;
+  top: 45px;
+  bottom: 53px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+}
+#pullDown,
+#pullUp {
+  padding: 0 10px;
+  height: 30px;
+  line-height: 30px;
+  color: #888;
+  text-align: center;
+}
+.bgcolor1 {
+  background-color: #f0f9f6;
+}
+.bgcolor2 {
+  background: #f0f9f6;
+}
+.bgcolor3 {
+  background: #f0f9f6;
+}
+.bgcolor9 {
+  background-color: #f0f9e6;
+}
+.filterData {
+  width: 100%;
+  margin-top: 14px;
+  border-radius: 5px;
+}
+.filterData .day {
+  color: #ccc;
+  margin-top: 5px;
+}
+.filterData .day .zt {
+  margin-left: 5%;
+}
+.filterData .day .jt {
+  margin-right: 5%;
+}
+.filterData .qi {
+  height: 40px;
+  color: #ccc;
+  margin-top: 10px;
+}
+.filterData .qi .sq {
+  margin-left: 5%;
+}
+.filterData .qi .bq {
+  margin-right: 5%;
+}
+.filterData .zt,
+.filterData .jt,
+.filterData .sq,
+.filterData .bq {
+  width: 40%;
+  height: 40px;
+  text-align: center;
+  color: #000;
+}
+.write {
+  width: 100%;
+}
+.write .write-box .li-con {
+  width: 100%;
+  height: 42px;
+  line-height: 42px;
+  background-color: #fff;
+  color: #000;
+  border-radius: 6px;
+  box-shadow: 0px 2px 2px #D0D0D0, 2px 0px 2px #D0D0D0;
+  margin-bottom: 14px;
+}
+.write .write-box .li-con .item-name {
+  margin-left: 4px;
+}
+.write .write-box .li-con .item-box .sel-font {
+  margin-right: 16px;
+}
+#offCanvasBtn {
+  margin-left: 0px;
+}
+#header .newadd {
+  padding: 0 10px 0 10px;
+  margin-right: 0px;
+  height: 44px;
+  line-height: 47px;
+  font-size: 16px;
+}
+.surebox {
+  width: 100%;
+  height: 53px;
+  position: absolute;
+  bottom: 0;
+  border-top: 1px solid #c8c7cc;
+  background-color: #fff;
+  padding: 8px 68px 0 6px;
+}
+.surebox button.sure {
+  height: 40px;
+  line-height: 10px;
+  margin: 6px;
+}
+.continer .setting {
+  width: 100%;
+  height: 42px;
+  line-height: 42px;
+  background-color: #4ed59b;
+  text-align: center;
+  border-radius: 6px;
+  color: #000;
+}

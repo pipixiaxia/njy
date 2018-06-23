@@ -1,0 +1,338 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农家云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" href="css/pierceQueryResult.css" />
+	</head>
+
+	<body>
+		<div class="mui-inner-wrap">
+			<header id="header" class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-back mui-pull-left"></a>
+				<a id="setting" class="mui-icon mui-icon-gear-filled mui-pull-right"></a>
+				<h1 class="mui-title"></h1>
+			</header>
+			<div id="wrapper">
+				<div id="scroller">
+					<div id="pullDown">
+						<span class="pullDownLabel">下拉刷新</span>
+					</div>
+					<div id="table-count">
+						<div id="main" style="width: 100%;height:300px;margin: 0 auto;"></div>
+						<table cellspacing="0" cellpadding="0">
+
+						</table>
+					</div>
+					<div id="pullUp">
+						<span class="pullUpLabel"></span>
+					</div>
+				</div>
+			</div>
+			<div class="mui-off-canvas-backdrop"></div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui-init.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script src="js/demoUtils.js"></script>
+		<script src="js/echarts.js"></script>
+		<script src="js/global.js"></script>
+		<script>
+			var loadCurrentPage = 1;
+			var pageSize = 30;
+			//初始状态，加载数据  
+			function loadAction(isCloseWait) {
+				var sjcNameArr = JSON.parse(localStorage.getItem("sjcNameArr")); //取数据窗名数组
+				var newDateObjArr = JSON.parse(localStorage.getItem("newDateObjArr")); //取统计条件数组
+				var sjcName = sjcNameArr[sjcNameArr.length - 1]; //取数据窗名数组最后一条数据
+				var newDateObj = newDateObjArr[newDateObjArr.length - 1]; //取统计条件数组最后一条数据
+				loadCurrentPage = 1;
+				if(!isCloseWait) {
+					mui.plusReady(function() {
+						plus.nativeUI.showWaiting("", {
+							background: "#ccc"
+						});
+					});
+				}
+				console.log(sjcName+"----"+JSON.stringify(newDateObj))
+				vdn.post({
+						"method": "nvo_bi.get_dw_echarts",
+						"params": [sjcName, JSON.stringify(newDateObj)]
+					},
+					function(data) {
+						if(data.Result == "") {
+							setTimeout(function() {
+								plus.nativeUI.closeWaiting();
+							}, 200);
+							mui.toast("无数据");
+						} else {
+							createDom(data);
+						}
+					},
+					function(err) {
+						alert("Code:" + err.Code + ", Message" + err.Message);
+					});
+				myScroll.refresh();
+			}
+			//下拉刷新当前数据  
+			function pullDownAction() {
+				var queryResultArr = JSON.parse(localStorage.getItem("queryResultArr")); //取出所有Result
+				queryResultArr.pop();
+				localStorage.setItem("queryResultArr", JSON.stringify(queryResultArr));
+				setTimeout(function() {
+					loadAction();
+				}, 200);
+			}
+			//上拉加载更多数据  
+			function pullUpAction(bool) {
+				var queryResultArr = JSON.parse(localStorage.getItem("queryResultArr")); //取出所有Result
+				var queryResult = queryResultArr[queryResultArr.length - 1]; //当前页的Result
+				var localallDataLen = queryResult.data.length;
+				var domLoadLength = $("tbody").children().length;
+				if(localallDataLen == domLoadLength) {
+					$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					return;
+				}
+				setTimeout(function() {
+					if(bool === undefined) {
+						var getNewData = getLocalToData(++loadCurrentPage, pageSize);
+						getResult(getNewData, queryResult);
+					}
+					myScroll.refresh();
+				}, 400);
+			}
+
+			function createDom(data) {
+				setTimeout(function() {
+					plus.nativeUI.closeWaiting();
+				}, 200);
+				//echarts
+				var mainBox = document.getElementById('main');
+				var myChart = echarts.init(mainBox);
+				var option = JSON.parse(data.Result);
+				if(option.echarts[0] === "") {
+					mainBox.style.display = 'none';
+				} else {
+					myChart.clear();
+					myChart.setOption(option.echarts[0]);
+					mainBox.style.display = 'inline';
+				}
+				//表格
+				$("table").empty();
+				var label = JSON.parse(data.Result).label;
+				var font = JSON.parse(data.Result).font;
+				var tjsm = JSON.parse(data.Result).tjsm;
+				var title = JSON.parse(data.Result).title;
+				//动态添加标题
+				$("header").children("h1").html(title);
+				//创建thead、tbody
+				var thead = "";
+				var tbody = "";
+				thead += "<thead id='thead'>";
+				thead += "<tr>";
+				thead += "<td style='font-size:" + font[0] + "px;background:#fff;color:#828888;text-align:center' colspan='" + label.length + "'>" + tjsm + "</td>";
+				thead += "</tr>";
+				thead += "<tr>";
+				label.forEach(function(item, index) {
+					thead += "<th style='font-size:" + font[index] + "px;'>" + item + "</th>";
+				});
+				thead += "</tr>";
+				thead += "</thead>";
+				tbody += "<tbody id='tbody'></tbody>";
+				$("table").append(thead).append(tbody);
+				var queryResultArr = JSON.parse(localStorage.getItem("queryResultArr") || '[]'); //取出所有Result
+				queryResultArr.push(JSON.parse(data.Result));
+				localStorage.setItem("queryResultArr", JSON.stringify(queryResultArr));
+				//第1页30条数据
+				var getNewData = getLocalToData(loadCurrentPage, pageSize);
+				getResult(getNewData, JSON.parse(data.Result));
+				myScroll.refresh();
+				pullUpAction(false);
+			}
+			//			每次加载查询筛选都先从本地获取数据
+			function getLocalToData(currentPage, pageSize) {
+				var queryResultArr = JSON.parse(localStorage.getItem("queryResultArr")); //取出所有Result
+				var queryResult = queryResultArr[queryResultArr.length - 1]; //取出当前页Result
+				var localData = queryResult.data;
+				var newData = []; //分段存储数据
+				for(var i = (currentPage - 1) * pageSize; i < (currentPage - 1) * pageSize + pageSize; i++) {
+					if(localData[i] === undefined) {
+						break;
+					};
+					newData.push(localData[i]);
+				}
+				return [newData];
+			}
+
+			function getResult(dataArr, allData) {
+				var font = allData.font;
+				//创建tbody
+				var tr = "";
+				var lh = 15;
+				if(allData.dw === "delete" || allData.dw === "true" || allData.dw === "edit") { //是否穿透
+					dataArr[0].forEach(function(item, index) {
+						tr += "<tr  sjcName='" + item[item.length - 1].split("`")[0] + "' spbh='" + item[item.length - 1].split("`")[1] + "' flag='" + item[0] + "' dw='" + allData.dw + "' class='trBtn bgcolor" + item[0] + "'>"
+						for(var i = 1; i < item.length - 1; i++) {
+							if(font[i - 1] == 11) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] == 12) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] > 12) {
+								lh = parseInt(font[i - 1]) + 6;
+							}
+							tr += "<td class='textAlign" + allData.alignment[i - 1] + " color" + (i == 1 ? item[0] : 1) + "' style='font-size:" + font[i - 1] + "px; width:" + allData.col_width[i - 1] + "; line-height:" + lh + "px'>" + item[i] + "</td>";
+						};
+						tr += "</tr>";
+					});
+				} else if(allData.dw === "drop") {
+					$("#deltable").remove();
+					$("body").append("<div class='deltable'><button id='deltable' type='button' class='mui-btn mui-btn-primary'>删除</button></div>");
+					dataArr[0].forEach(function(item, index) {
+						$("#deltable").attr("sjcName", item[item.length - 1].split("`")[0]); //用于右上角drop
+						tr += "<tr  sjcName='" + item[item.length - 1].split("`")[0] + "' spbh='" + item[item.length - 1].split("`")[1] + "' flag='" + item[0] + "' dw='" + allData.dw + "' class='trBtn bgcolor" + item[0] + "'>"
+						for(var i = 1; i < item.length - 1; i++) {
+							if(font[i - 1] == 11) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] == 12) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] > 12) {
+								lh = parseInt(font[i - 1]) + 6;
+							}
+							tr += "<td class='textAlign" + allData.alignment[i - 1] + " color" + (i == 1 ? item[0] : 1) + "' style='font-size:" + font[i - 1] + "px; width:" + allData.col_width[i - 1] + "; line-height:" + lh + "px'>" + item[i] + "</td>";
+						};
+						tr += "</tr>";
+					});
+				} else {
+					dataArr[0].forEach(function(item, index) {
+						tr += "<tr class='trBtn bgcolor" + item[0] + " dw='" + allData.dw + "''>"
+						for(var i = 1; i < item.length; i++) {
+							if(font[i - 1] == 11) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] == 12) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] > 12) {
+								lh = parseInt(font[i - 1]) + 6;
+							}
+							tr += "<td class='textAlign" + allData.alignment[i - 1] + "' style='font-size:" + font[i - 1] + "px; width:" + allData.col_width[i - 1] + "; line-height:" + lh + "px'>" + item[i] + "</td>";
+						};
+						tr += "</tr>";
+					});
+				}
+				$("#tbody").append(tr);
+			}
+			//点击表格一行跳转页面
+			var bgcolor = "";
+			var startTime = 0;
+			mui("table").on("touchstart", '.trBtn', function() {
+				bgcolor = getRealStyle(this, "backgroundColor");
+				startTime = Date.now();
+			});
+			mui("table").on("touchend", '.trBtn', function() {
+				var endTime = Date.now();
+				var _this = this;
+				if(endTime - startTime < 200) {
+					this.style.backgroundColor = '#e7e7e7';
+					setTimeout(function() {
+						_this.style.backgroundColor = bgcolor;
+					}, 80);
+				}
+			});
+			mui("table").on("tap", '.trBtn', function() {
+				var dw = this.getAttribute("dw");
+				var flag = this.getAttribute("flag");
+				if(dw === "true" && flag === "0") { //去掉非穿透、小计、合计
+					var sjcName = this.getAttribute("sjcName");
+					var spbh = this.getAttribute("spbh");
+					var sjcNameArr = JSON.parse(localStorage.getItem("sjcNameArr")); //取数据窗名数组
+					var newDateObjArr = JSON.parse(localStorage.getItem("newDateObjArr")); //取统计条件数组
+					var newDateObj = newDateObjArr[newDateObjArr.length - 1];
+					newDateObj["penetrate"] = spbh; //选择日期不变，只改penetrate
+					sjcNameArr.push(sjcName);
+					newDateObjArr.push(newDateObj);
+					localStorage.setItem("sjcNameArr", JSON.stringify(sjcNameArr)); //存数据窗名
+					localStorage.setItem("newDateObjArr", JSON.stringify(newDateObjArr)); //存统计条件
+					mui.openWindow({
+						url: "pierceQueryResult3.html",
+						id: "pierceQueryResult3.html",
+						waiting: {
+							autoShow: false
+						}
+					});
+				}
+			});
+
+			function closeSideBar() { //设置完回来刷新和关闭侧边栏
+				loadAction();
+				mui('#offCanvasWrapper').offCanvas('close');
+			}
+
+			mui.back = function() { //重写返回
+				var sjcNameArr = JSON.parse(localStorage.getItem("sjcNameArr")); //取数据窗名数组
+				var newDateObjArr = JSON.parse(localStorage.getItem("newDateObjArr")); //取统计条件数组
+				var queryResultArr = JSON.parse(localStorage.getItem("queryResultArr"));
+				sjcNameArr.pop(); //删除最后一条数据
+				newDateObjArr.pop();
+				queryResultArr.pop();
+				localStorage.setItem("sjcNameArr", JSON.stringify(sjcNameArr)); //存数据窗名
+				localStorage.setItem("newDateObjArr", JSON.stringify(newDateObjArr)); //存统计条件
+				localStorage.setItem("queryResultArr", JSON.stringify(queryResultArr));
+				mui.doAction("backs");
+			}
+
+			mui("body").on("tap", "#deltable", function() { //右上角drop
+				var sjcName = this.getAttribute("sjcname");
+				var newDateObjArr = JSON.parse(localStorage.getItem("newDateObjArr")); //取统计条件数组
+				var newDateObj = newDateObjArr[newDateObjArr.length - 1]; //取统计条件数组最后一条数据
+				var spbh = newDateObj.penetrate;
+				mui.confirm("", "确定删除" + spbh + "？", ['取消', '确定'], function(e) {
+					if(e.index == 1) {
+						vdn.post({
+							"method": "nvo_edit.exec_dp",
+							"params": [sjcName, JSON.stringify(newDateObj)]
+						}, function(data) {
+							if(data.Result === "ok") {
+								mui.toast("删除" + spbh + "成功")
+								var ws = plus.webview.currentWebview();
+								plus.webview.close(ws); //关闭当前窗口
+								var wobj = plus.webview.getWebviewById("formDateRange.html"); //重载父窗口
+								wobj.reload(true);
+							}
+						}, function(err) {
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						});
+					}
+				}, "div");
+			});
+
+			mui("#header").on("tap", "#setting", function() { //右上角setting
+				var webviewId = plus.webview.currentWebview().id;
+				localStorage.setItem("webviewId", webviewId);
+				mui.openWindow({
+					url: "setChart.html",
+					id: "setChart",
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+		</script>
+
+		<script>
+			$('.mui-inner-wrap').on('drag', function(event) {
+				event.stopPropagation();
+			});
+		</script>
+	</body>
+
+</html>

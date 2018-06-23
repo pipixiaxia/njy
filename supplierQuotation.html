@@ -1,0 +1,265 @@
+<!VDNDOC "PageBase":"nvo_bill_zl","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/supplierQuotation.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+			<a class="mui-icon shaixuan mui-pull-right" style="font-size: 16px;margin-top: 6px;">筛选</a>
+		</header>
+		<div class="searchbody">
+			<div class="searchcontent">
+				<input type="search" id="search" placeholder="请输入姓名或手机号" />
+			</div>
+			<div class="searchbtn">
+				<button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search">
+		            查询
+		        </button>
+			</div>
+		</div>
+		<div id="wrapper">
+			<div id="scroller">
+				<div id="pullDown">
+					<span class="pullDownLabel">下拉刷新</span>
+				</div>
+				<ul id="thelist" class="mui-table-view">
+					<!--<li class="mui-table-view-cell">
+						<div><span>地址：</span><span>123</span></div>
+						<p class="fl"><span>姓名：</span><span>123</span></p>
+						<p class="fr"><span>手机号：</span><span>654616514</span></p>
+					</li>-->
+				</ul>
+				<div id="pullUp">
+					<span class="pullUpLabel"></span>
+				</div>
+			</div>
+		</div>
+		<!--遮罩蒙版-->
+		<div class="maskbottom mui-backdrop"></div>
+		<!--大的遮罩弹出层-->
+		<div class="masktop alertMask">
+			<!--请选择-->
+			<div class="top">请选择</div>
+			<!--选择项-->
+			<div class="center">
+				<div class="myscroll mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="lists mui-table-view ">
+							<!--<li class="mui-table-view-cell">全部(606)</li>
+							<li class="mui-table-view-cell">怀孕(473)</li>-->
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!--底部-->
+			<div class="bottom">
+				<div class="more fr">上下滑动查看更多</div>
+			</div>
+		</div>
+
+		<script src="js/mui.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script>
+			var loadCurrentPage, findCurrentPage, filterCurrentPage = 1;
+			var pageSize = 15;
+
+			var gnz = localStorage.getItem("gnz");
+			$("header").children("h1").html(gnz.slice(2));
+
+			//初始状态，加载数据  
+			function loadAction() {
+				$("#thelist").attr("loadTip", "load");
+				loadCurrentPage = 1;
+				vdn.post({
+					"method": "nvo_bill_zl.getbill_khzc",
+					"params": ["", "", "", "load"]
+				}, function(data) {
+					console.log(data)
+					$("#thelist").empty();
+					localStorage.setItem("newData", data.Result);
+					//第1页15条数据
+					var getNewData = getLocalToData(loadCurrentPage, pageSize);
+					getResult(getNewData);
+					//调用pullUpAction,不然笫一次会拖不动,传入false表示不加载数据
+					pullUpAction(false);
+				}, function(err) {
+					console.log("Code:" + err.Code + ", Message" + err.Message);
+				})
+				myScroll.refresh();
+			}
+
+			//下拉刷新当前数据  
+			function pullDownAction() {
+				loadAction();
+			}
+
+			//上拉加载更多数据  
+			function pullUpAction(bool) {
+				//ls_end为当前显示列表中最后一个
+				var loadTip = $("#thelist").attr("loadTip");
+				var localallData = JSON.parse(localStorage.getItem("newData")).length;
+				var domLoadLength = $("#thelist").children("li").length
+				if(localallData == domLoadLength) {
+					$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					return;
+				} 
+				setTimeout(function() {
+					//只有手动下拉会加载数据
+					if(bool === undefined) {
+						if(loadTip == "load") {
+							var getNewData = getLocalToData(++loadCurrentPage, pageSize);
+							getResult(getNewData);
+						} else if(loadTip == "find") {
+							var getNewData = getLocalToData(++findCurrentPage, pageSize);
+							getResult(getNewData);
+						} else if(loadTip == "filter") {
+							var getNewData = getLocalToData(++filterCurrentPage, pageSize);
+							getResult(getNewData);
+						}
+					}
+					myScroll.refresh();
+				}, 400);
+			}
+
+			mui(".searchbtn").on("tap", "button", function() {
+				$("#thelist").attr("loadTip", "find");
+				findCurrentPage = 1;
+				var btnHTML = $("#search").val();
+				vdn.post({
+					"method": "nvo_bill_zl.getbill_khzc",
+					"params": ["", "", btnHTML, "find"]
+				}, function(data) {
+					$("#thelist").empty();
+					if(data.Result == "") {
+						$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					}
+					localStorage.setItem("newData", data.Result);
+					$("#pullUp").children(".pullUpLabel").html("上拉加载更多");
+					//第1页15条数据
+					var getNewData = getLocalToData(findCurrentPage, pageSize);
+					getResult(getNewData);
+					//调用pullUpAction,不然笫一次会拖不动,传入false表示不加载数据
+					pullUpAction(false);
+				}, function(err) {
+					console.log("Code:" + err.Code + ", Message" + err.Message);
+				})
+			});
+
+			//			每次加载查询筛选都先从本地获取数据
+			function getLocalToData(currentPage, pageSize) {
+				var localData = JSON.parse(localStorage.getItem("newData"));
+				var newData = []; //分段存储数据
+				for(var i = (currentPage - 1) * pageSize; i < (currentPage - 1) * pageSize + pageSize; i++) {
+					if(localData[i] === undefined) {
+						break;
+					};
+					newData.push(localData[i]);
+				}
+				return newData;
+			}
+
+			function getResult(dataArr) {
+				$.each(dataArr, function(index, item) {
+					var li = $("<li>");
+					li.addClass("mui-table-view-cell");
+					var div = $("<div>");
+					var spana = $("<span>");
+					spana.html("姓名：");
+					var spanb = $("<span>");
+					spanb.html(item.xm);
+					div.append(spana).append(spanb);
+					var p1 = $("<p>");
+					p1.addClass("fl");
+					var p2 = $("<p>");
+					p2.addClass("fr");
+					var span1 = $("<span>");
+					span1.html("地址：");
+					var span2 = $("<span>");
+					span2.html(item.pqmc);
+					var span3 = $("<span>");
+					span3.html("手机号：");
+					var span4 = $("<span>");
+					span4.html(item.BPsj);
+					p1.append(span1).append(span2);
+					p2.append(span3).append(span4);
+					li.append(div).append(p1).append(p2);
+					$("#thelist").append(li);
+				});
+			}
+
+			//初始化mui中scroll区域控件
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+			});
+			//点击筛选弹出遮罩和下拉框
+			$(".shaixuan")[0].addEventListener("tap", function() {
+				$(".maskbottom").fadeIn(150);
+				$(".masktop").fadeIn(150);
+				filterCurrentPage = 1;
+				vdn.post({
+					"method": "nvo_bill_zl.getkhpq_json"
+				}, function(data) {
+					$(".lists").empty();
+					$.each(data.Result, function(index, item) {
+						var li = $("<li>");
+						li.addClass("mui-table-view-cell");
+						li.html(item.pqmc);
+						li.attr("pqbh", item.pqbh);
+						$(".lists").append(li);
+					});
+				}, function(err) {
+					console.log("Code:" + err.Code + ", Message" + err.Message);
+				})
+
+			});
+			//			点击遮罩关闭遮罩和下拉框
+			$(".maskbottom")[0].addEventListener("tap", function() {
+				$(".maskbottom").fadeOut(150);
+				$(".masktop").fadeOut(150);
+			})
+
+			mui(".lists").on("tap", "li", function() {
+				$("#thelist").attr("loadTip", "filter");
+				var pqbh = $(this).attr("pqbh");
+				$(".maskbottom").fadeOut(200);
+				$(".masktop").fadeOut(200);
+				filterCurrentPage = 1;
+				vdn.post({
+					"method": "nvo_bill_zl.getbill_khzc",
+					"params": ["", pqbh, "", "filter"]
+				}, function(data) {
+					$("#thelist").empty();
+					if(data.Result == "") {
+						$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					}
+					localStorage.setItem("newData", data.Result);
+					$("#pullUp").children(".pullUpLabel").html("上拉加载更多");
+					//第1页15条数据
+					var getNewData = getLocalToData(filterCurrentPage, pageSize);
+					getResult(getNewData);
+					//调用pullUpAction,不然笫一次会拖不动,传入false表示不加载数据
+					pullUpAction(false);
+				}, function(err) {
+					console.log("Code:" + err.Code + ", Message" + err.Message);
+				})
+			})
+		</script>
+	</body>
+
+</html>

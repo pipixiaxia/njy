@@ -1,0 +1,303 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<style>
+			#paizhao {
+				display: block;
+				margin-top: 90px;
+				margin-left: 40px;
+				width: 110px;
+				height: 110px;
+				border-radius: 50%;
+				font-size: 22px;
+				background-color: #28a1d8;
+				color: #fff;
+			}
+			
+			#shangchuan {
+				display: block;
+				margin-top: 90px;
+				margin-right: 40px;
+				width: 110px;
+				height: 110px;
+				border-radius: 50%;
+				font-size: 22px;
+				background-color: #3a85bf;
+				color: #fff;
+			}
+			
+			#box {
+				text-align: center;
+				margin-top: 10px;
+				height: 20px;
+				word-break: break-all;
+			}
+			
+			#imgBox {
+				margin-top: 20px;
+				text-align: center;
+			}
+			
+			#img {
+				width: 220px;
+			}
+		</style>
+		<style type="text/css">
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			p img {
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">拍照或上传</h1>
+		</header>
+		<div class="clearfloat">
+			<button class="fl" id="paizhao" type="button">拍照</button>
+			<button class="fr" id="shangchuan">上传图片</button>
+		</div>
+		<div class="mui-content" style="text-align: center;">
+			<div id="imgcon" class="mui-content-padded" style="height:267px;overflow-y: hidden;"></div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/exif.js"></script>
+		<script src="js/global.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/mui.zoom.js"></script>
+		<script src="js/mui.previewimage.js"></script>
+		<script>
+			mui.previewImage();
+			document.addEventListener("plusready", function() {
+				//拍照
+				document.getElementById("paizhao").addEventListener("tap", function() {
+					var c = plus.camera.getCamera();
+					var fmt = c.supportedImageFormats[0]
+					c.captureImage(function(e) {
+						plus.io.resolveLocalFileSystemURL(e, function(entry) {
+							plus.gallery.save(entry.toLocalURL(),
+								function(e) {
+									mui.toast("保存照片成功");
+								},
+								function(e) {
+									mui.toast("保存照片失败");
+								});
+						});
+					}, function(e) {
+						mui.toast("取消拍照操作");
+					}, {
+						filename: "_doc/",
+						format: fmt,
+						index: 1
+					});
+				});
+				//上传图片
+				document.getElementById("shangchuan").addEventListener("tap", function() {
+					plus.gallery.pick(function(path) {
+						var filearr = path.files;
+						var totalBaseArr = [];
+						var w = plus.nativeUI.showWaiting("上传中...");
+						filearr.forEach(function(value, index) {
+							mui.toast("上传第" + (index + 1) + "张照片")
+							imgUrl2Base64(value, index, function(imgData) {
+								totalBaseArr.push(imgData);
+								if(totalBaseArr.length == filearr.length){
+									vdn.post({
+										"method": "nvo_base64.tm",
+										"params": ["img", JSON.stringify({"img" : totalBaseArr})]
+									}, function(data) {
+										plus.nativeUI.closeWaiting(w);
+										if(JSON.parse(data.Result).result == "ok"){
+											plus.nativeUI.closeWaiting(w);
+											mui.toast("上传成功");
+											var wz = JSON.parse(data.Result).wz;
+											var imgPathArr = wz.split("`");
+											$("#imgcon").empty();
+											imgPathArr.forEach(function(value, index){
+												var dom = "<p><img style='width:200px' src='http://xjkjhunter.asuscomm.com:8088"+ value +"' data-preview-src='' data-preview-group='1'></p>";
+												$("#imgcon").append(dom);
+											})
+										}
+									}, function(err) {
+										alert("Code:" + err.Code + ", Message" + err.Message);
+									});
+								}
+							});
+						});
+					}, function(err) {
+						mui.toast("取消选择照片");
+					}, {
+						animation: false,
+						multiple: true,
+						maximum: 3,
+						onmaxed: function() {
+							mui.toast("最多只能选择3张图片");
+						},
+						system: false
+					});
+				});
+				
+				mui.previewImage();
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<style type="text/css">
+			html {
+				height: 100%
+			}
+			
+			body {
+				height: 100%;
+				margin: 0px;
+				padding: 0px
+			}
+			
+			h1 {
+				width: 70% !important;
+				text-align: center;
+			}
+			
+			#container {
+				height: 100%;
+				margin-top: 45px;
+			}
+			
+			#dhBtn {
+				line-height: 44px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="tit" class="mui-title shenglue"></h1>
+			<a id="dhBtn" class="mui-icon-right-nav mui-pull-right">导航</a>
+		</header>
+		<div id="container"></div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/global.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sw9PK3GKn4SflSLE39OG2xoSlTGfSBgB"></script>
+		<script>
+			window.onload = function() {
+				var addrObj = JSON.parse(localStorage.getItem("addrObj"));
+				var addrName = addrObj.addrName;
+				var endLongitude = addrObj.endLongitude;
+				var endLatitude = addrObj.endLatitude;
+
+				//加载地图
+				document.getElementById("tit").innerHTML = addrName;
+				setMap("container", endLongitude, endLatitude);
+
+				//点击导航
+				document.getElementById("dhBtn").addEventListener("tap", function() {
+					// 调用百度地图导航 
+					//第一种方式
+					location.href = "baidumap://map/direction?destination=" + endLatitude + "," + endLongitude + "&mode=driving&src=农佳云";
+					//第二种方式
+					var geolocation = new BMap.Geolocation();
+					geolocation.getCurrentPosition(function(r) {
+						if(this.getStatus() == BMAP_STATUS_SUCCESS) {
+							location.href = "http://api.map.baidu.com/direction?origin=latlng:" + r.point.lat + "," + r.point.lng + "|name:本地&destination=" + endLatitude + "," + endLongitude + "&mode=driving&region=" + addrName + "&output=html&src=农佳云";
+						} else {
+							alert('failed' + this.getStatus());
+						}
+					});
+				});
+			}
+		</script>
+	</body>
+
+</html>

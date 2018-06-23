@@ -1,0 +1,121 @@
+.top_content {
+  width: 100%;
+  height: 200px;
+  background-color: #0064C8;
+  text-align: center;
+  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 25pt;
+  font-weight: bold;
+  line-height: 200px;
+}
+.icon_size {
+  font-size: 50pt;
+}
+.area {
+  margin: 20px auto 0px auto;
+}
+.mui-input-group {
+  margin-top: 10px;
+}
+.mui-input-group:first-child {
+  margin-top: 20px;
+}
+.mui-input-group label {
+  width: 22%;
+}
+.mui-input-row label ~ input,
+.mui-input-row label ~ select,
+.mui-input-row label ~ textarea {
+  width: 78%;
+}
+.mui-checkbox input[type=checkbox],
+.mui-radio input[type=radio] {
+  top: 6px;
+}
+.mui-content-padded {
+  margin-top: 5px;
+}
+.mui-btn {
+  padding: 10px;
+}
+.link-area {
+  display: block;
+  margin-top: 25px;
+  text-align: center;
+}
+.oauth-area {
+  position: absolute;
+  bottom: 20px;
+  left: 0px;
+  text-align: center;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+.oauth-area .oauth-btn {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-size: 30px 30px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0px 20px;
+  /*-webkit-filter: grayscale(100%); */
+  border: solid 1px #ddd;
+  border-radius: 25px;
+}
+.oauth-area .oauth-btn:active {
+  border: solid 1px #aaa;
+}
+.oauth-area .oauth-btn.disabled {
+  background-color: #ddd;
+}
+#inputholder {
+  background-color: #0064C8;
+  border: none;
+  text-align: center;
+  font-size: 18px;
+  padding: 0;
+  margin-bottom: 0;
+  height: 60px;
+  line-height: 60px;
+}
+input::-webkit-input-placeholder {
+  color: #fff;
+  opacity: 1;
+}
+#admin {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  background-color: #fff;
+}
+#admin::after {
+  height: 0px;
+}
+#admin input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset !important;
+}
+#mm {
+  background-color: #fff;
+  margin-bottom: 4px;
+}
+#mm::after {
+  height: 0px;
+}
+#login-form {
+  margin-top: 0;
+  background-color: #efeff4;
+}
+#btn {
+  margin: 0;
+  padding: 8px;
+  background-color: #fff;
+}
+#account {
+  height: 38px;
+  text-align: center;
+}

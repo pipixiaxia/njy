@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<style>
+			.scroll-ul-con {
+				margin-top: 45px;
+				padding-left: 10px;
+				padding-right: 10px;
+				padding-top: 10px;
+			}
+			
+			.scroll-ul-con .li-con {
+				width: 100%;
+				height: 52px;
+				background-color: #fff;
+				border-radius: 5px;
+				border: 1px solid #e7e7e7;
+				margin-top: 15px;
+				line-height: 52px;
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">种猪记录</h1>
+		</header>
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="scroll-ul-con" class="scroll-ul-con">
+					<!--<li class="li-con">
+						<div class="liL fl">种猪耳号</div>
+						<div class="liR fr">00111</div>
+					</li>
+					<li class="li-con">
+						<div class="liL fl">离场日期</div>
+						<div id="selDate" class="liR fr">
+							<span id="date"></span>
+							<span class="mui-icon mui-icon-bars"></span>
+						</div>
+					</li>
+					<li class="li-con">
+						<div class="liL fl">所在舍</div>
+						<div id="selZS" class="liR fr">
+							<span>小飞猪</span>
+							<span class="mui-icon mui-icon-arrowdown"></span>
+						</div>
+					</li>
+					<li class="li-con">
+						<div class="liL fl">备注</div>
+						<div id="selZS" class="liR fr">
+							<input type="text" />
+						</div>
+					</li>-->
+				</ul>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script>
+			var arr = [{
+					count: 2
+				},
+				{
+					count: 1
+				}
+			];
+			
+			for(var i=0; i<arr.length; i++){
+				if(arr[i].count == 1){
+					var li = "<li class='li-con'>";
+					li += "<div class='liL fl'>离场日期</div>";
+					li += "<div id='selDate' class='liR fr'>";
+					li += "<span id='date'></span>";
+					li += "<span class='mui-icon mui-icon-bars'></span>";
+					li += "</div>";
+					li += "</li>";
+				}else if(arr[i].count == 2){
+					var li = "<li class='li-con'>";
+					li += "<div class='liL fl'>所在舍</div>";
+					li += "<div id='selZS' class='liR fr'>";
+					li += "<span>小飞猪</span>";
+					li += "<span class='mui-icon mui-icon-arrowdown'></span>";
+					li += "</div>";
+					li += "</li>";
+				}
+				$("#scroll-ul-con").append(li);
+			}
+			
+			
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+			});
+
+			(function() {
+				//日期选择
+				var date = new Date();
+				var y = date.getFullYear();
+				var m = date.getMonth() + 1;
+				m = m < 10 ? "0" + m : m;
+				var d = date.getDate();
+				var selDateArr = [y, m, d];
+				var selDate = selDateArr.join(".");
+				document.getElementById("date").innerHTML = selDate;
+
+				document.getElementById("selDate").addEventListener('tap', function() {
+					var optionsJson = this.getAttribute('data-options') || '{}';
+					var options = JSON.parse(optionsJson);
+					options = {
+						type: "date",
+						beginDate: new Date(1990, 01, 02),
+						endDate: new Date(2090, 12, 30),
+						labels: ['年', '月', '日']
+					}
+
+					var picker = new mui.DtPicker(options);
+					picker.show(function(rs) {
+						var selDateArr = [rs.y.text, rs.m.text, rs.d.text];
+						var selDate = selDateArr.join(".");
+						console.log(selDate)
+						document.getElementById("date").innerHTML = selDate;
+						//result.innerText = '选择结果: ' + rs.text;
+						picker.dispose();
+					});
+				}, false);
+			})();
+
+			(function($, doc) {
+				//猪舍选择
+				var userPicker = new $.PopPicker();
+				userPicker.setData([{
+					value: 'lj',
+					text: '罗辑'
+				}, {
+					value: 'gezh',
+					text: '歌者'
+				}]);
+
+				var selZS = doc.getElementById('selZS');
+				selZS.addEventListener('tap', function(event) {
+					userPicker.show(function(items) {
+						console.log(JSON.stringify(items[0]));
+						//返回 false 可以阻止选择框的关闭
+						//return false;
+					});
+				}, false);
+			})(mui, document);
+		</script>
+	</body>
+
+</html>

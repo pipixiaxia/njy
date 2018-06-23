@@ -1,0 +1,135 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/select_Default_Goods_Addr.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+		</header>
+		<div id="scrollCon" class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="list" class="mui-table-view">
+					<!--<li class="mui-table-view-cell">
+						<h3>成品库管理-成品仓注</h3>
+						<div class="posi clearfloat">
+							<span class="fl"><span class="mui-icon mui-icon-location"></span>广西柳州高新一路</span>
+							<span class="fr"><span class="mui-icon mui-icon-paperplane"></span>位置</span>
+						</div>
+					</li>-->
+				</ul>
+			</div>
+		</div>
+		<div class="surebox">
+			<button id="sure" type="button" onclick="javascript:__doPostBack(&#39;sure&#39;,&#39;&#39;);" class="sure mui-btn mui-btn-primary">确定</button>
+		</div>
+
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sw9PK3GKn4SflSLE39OG2xoSlTGfSBgB"></script>
+		<script>
+			$(function() {
+				vdn.post({
+					"method": "nvo_bi.get_dp",
+					"params": ["bi_dwckb", ""]
+				}, function(data) {
+					console.log(JSON.parse(data.Result))
+					var result = JSON.parse(data.Result);
+					$("header h1").html(result.title);
+					result.data.forEach(function(item, index) {
+						var li = "<li ckmc=" + item[2] + " class='mui-table-view-cell clearfloat'>";
+						li += "<div class='fl' style='width:80%'>"
+						li += "<h3>" + item[2] + "</h3>";
+						li += "<div class='posi clearfloat'>";
+						li += "<span class='fl'><span class='mui-icon mui-icon-location'></span>" + item[3] + "</span>";
+						li += "<span addr=" + item[3] + " position=" + item[4] + " class='posibtn fr'><span class='mui-icon mui-icon-paperplane'></span>查看位置</span>";
+						li += "</div>";
+						li += "</div>";
+						li += '<div class="fr rightbox mui-radio">';
+						li += '<input class="radioipt" name="radio1" type="radio" '+(item[1]=="1"?'checked=true':'')+'>';
+						li += '</div>';
+						li += "</li>";
+						$("#list").append(li);
+					});
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+
+				mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005
+				});
+				
+				mui("#list").on("tap", "li", function(){
+					$(this.children[1].children[0]).trigger("click");
+				});
+				
+				//选默认提货点
+				document.getElementById("sure").addEventListener("tap", function(){
+					$(".radioipt").each(function(index, inputdom){
+						if(inputdom.checked){
+							var ckmc = $(inputdom).parent().parent().attr("ckmc")
+							var ckmcObj = {
+								"ckmc": ckmc
+							};
+							var ckmcArr = [JSON.stringify(ckmcObj)];
+							console.log(ckmcArr)
+							vdn.post({
+								"method": "nvo_xzkh.xzck",
+								"params": ckmcArr
+							}, function(data) {
+								console.log(data)
+								if(data.Result == "ok") {
+									mui.toast("选择" + ckmc + "成功");
+									setTimeout(function() {
+										mui.back();
+									}, 1000);
+								}
+							}, function(err) {
+								alert("Code:" + err.Code + ", Message" + err.Message);
+							});
+						}
+					})
+				});
+
+				//查看位置
+				document.addEventListener("plusready", function() {
+					mui("#list").on("tap", ".posibtn", function(e) {
+						e.stopPropagation();
+						//目的地经纬度
+						var position = this.getAttribute("position");
+						var addrName = this.getAttribute("addr");
+						var endLongitude = position.split(",")[0];
+						var endLatitude = position.split(",")[1];
+						var addrObj = {
+							"addrName": addrName,
+							"endLongitude": endLongitude,
+							"endLatitude": endLatitude
+						}
+						localStorage.setItem("addrObj", JSON.stringify(addrObj));
+						mui.openWindow({
+							url: "openMap.html",
+							id: "openMap",
+							waiting: {
+								autoShow: false
+							}
+						});
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

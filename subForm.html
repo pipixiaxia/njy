@@ -1,0 +1,946 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农家云</title>
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" href="css/subForm.css" />
+		<link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+	</head>
+
+	<body>
+		<!--侧滑菜单容器-->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div id="content" class="continer">
+							<!--<div class="startDate dataPicker">
+								<span class="font">开始日期:</span>
+								<span class="date">2017年12月22日</span>
+								<span class="calendar btn mui-icon-extra mui-icon-extra-calendar"></span>
+							</div>
+							<div class="endDate dataPicker">
+								<span class="font">结束日期:</span>
+								<span class="date">2017年12月22日</span>
+								<span class="calendar iconfont icon-rili btn">123</span>
+							</div>
+							<div class="filterData">
+								<div class="day clearfloat">
+									<button id="zt" class="zt fl mui-btn mui-btn-outlined">昨天</button>
+									<button id="jt" class="jt fr mui-btn mui-btn-outlined">今天</button>
+								</div>
+								<div class="qi clearfloat">
+									<button id="sq" class="sq fl mui-btn mui-btn-outlined">上期</button>
+									<button id="bq" class="bq fr mui-btn mui-btn-outlined">本期</button>
+								</div>
+							</div>
+							<div style="margin-top: 10px;" class="mui-search">
+								<input id="search" style="font-size: 14px;" type="search" class="mui-input-clear" placeholder="搜索">
+							</div>
+							<div class="write">
+								<ul class="write-box">
+
+								</ul>
+							</div>
+							<div style="width: 100%;position: relative;">
+								<div class="sure" style="width: 42%;position: absolute;left: 5%;top: 0;">确定</div>
+								<div class="excel" style="width: 42%;position: absolute;right: 5%;top: 0;">电子表格excel</div>
+							</div>-->
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<!--<header id="header" class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-back mui-pull-left"></a>
+					<h1 class="mui-title"></h1>
+					<a id="offCanvasBtn" href="#offCanvasSide" class="mui-icon mui-action-menu mui-icon-bars mui-pull-right"></a>
+				</header>-->
+				<div id="wrapper" style="top: 0;">
+					<div id="scroller">
+						<div id="pullDown">
+							<span class="pullDownLabel">下拉刷新</span>
+						</div>
+						<div id="table-count">
+							<div id="main" style="width: 100%;height:300px;margin: 0 auto;"></div>
+							<table cellspacing="0" cellpadding="0">
+
+							</table>
+						</div>
+						<div id="pullUp">
+							<span class="pullUpLabel"></span>
+						</div>
+					</div>
+				</div>
+				<div id="backdrop" class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui-init.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/demoUtils.js"></script>
+		<script src="js/echarts.js"></script>
+		<script src="js/global.js"></script>
+		<script>
+			var loadCurrentPage = 1;
+			var pageSize = 30;
+			var isSureTap = false;
+			var bmp = localStorage.getItem("bmp");
+			var dataArr = {};
+
+			//初始状态，加载数据
+			function loadAction(param) {
+				loadCurrentPage = 1;
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting('', {
+						background: "#ccc"
+					});
+				});
+				vdn.post({
+					"method": "nvo_bi.get_dw_echarts",
+					"params": [bmp, param]
+				}, function(data) {
+					console.log(JSON.parse(data.Result))
+					if(data.Result == "") {
+						setTimeout(function() {
+							plus.nativeUI.closeWaiting();
+						}, 200);
+						mui.toast("无数据");
+					} else {
+						if(param) { //点确定后下拉刷新有值之后再清空
+							$(".write-box").empty();
+						}
+						createDom(data);
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+				myScroll.refresh();
+			}
+
+			//下拉刷新当前数据  
+			function pullDownAction() {
+				setTimeout(function() {
+					if(isSureTap) {
+						var dateObj = localStorage.getItem("dateObj");
+						loadAction(dateObj);
+					} else {
+						loadAction();
+					}
+				}, 200);
+			}
+
+			//上拉加载更多数据  
+			function pullUpAction(bool) {
+				var localallDataLen = JSON.parse(localStorage.getItem("Result")).data.length;
+				var domLoadLength = $("tbody").children().length;
+				if(localallDataLen == domLoadLength) {
+					$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					return;
+				}
+				setTimeout(function() {
+					if(bool === undefined) {
+						var getNewData = getLocalToData(++loadCurrentPage, pageSize);
+						getResult(getNewData, JSON.parse(localStorage.getItem("Result")));
+					}
+					myScroll.refresh();
+				}, 400);
+			}
+
+			function createDom(res) {
+				setTimeout(function() {
+					plus.nativeUI.closeWaiting();
+				}, 200);
+				//echarts
+				var mainBox = document.getElementById('main');
+				var myChart = echarts.init(mainBox);
+				try {
+					var option = JSON.parse(res.Result);
+				} catch(e) {
+					mui.alert("JSON错误", '提示', '确定', function() {
+						mui.back();
+					});
+				}
+				if(option.echarts[0] === "") {
+					myChart.clear();
+					mainBox.style.display = 'none';
+				} else {
+					myChart.clear();
+					myChart.setOption(option.echarts[0]);
+					mainBox.style.display = 'inline';
+				}
+
+				//表格
+				$("table").empty();
+				var label = JSON.parse(res.Result).label;
+				var font = JSON.parse(res.Result).font;
+				var tjsm = JSON.parse(res.Result).tjsm;
+				var title = JSON.parse(res.Result).title;
+				var free = JSON.parse(res.Result).free;
+				//动态添加标题
+				$("header").children("h1").html(title);
+				//创建thead、tbody
+				var thead = "";
+				var tbody = "";
+				thead += "<thead id='thead'>";
+				thead += "<tr>";
+				thead += "<td style='font-size:" + font[0] + "px;background:#fff;color:#828888;text-align:center' colspan='" + label.length + "'>" + tjsm + "</td>";
+				thead += "</tr>";
+				thead += "<tr>";
+				label.forEach(function(item, index) {
+					thead += "<th style='font-size:" + font[index] + "px;'>" + item + "</th>";
+				});
+				thead += "</tr>";
+				thead += "</thead>";
+				tbody += "<tbody id='tbody'></tbody>";
+				$("table").append(thead).append(tbody);
+
+				localStorage.setItem("Result", res.Result);
+				//					第1页30条数据
+				var getNewData = getLocalToData(loadCurrentPage, pageSize);
+				getResult(getNewData, JSON.parse(res.Result));
+				myScroll.refresh();
+				createWriteDom(free);
+				var dateObj = JSON.parse(localStorage.getItem("dateObj") || '{}');
+				var selddlb2 = JSON.parse(localStorage.getItem("selddlb2"));
+				if(dateObj.startDate === undefined && dateObj.endDate === undefined) {
+					var date = new Date();
+					var y = date.getFullYear();
+					var m = date.getMonth() + 1;
+					m = m < 10 ? "0" + m : m;
+					var d = date.getDate();
+					d = d < 10 ? "0" + d : d;
+					$(".date").html(y + "年" + m + "月" + d + "日");
+					$(".date").parent().attr("date", y + "." + m + "." + d);
+				} else { //选择之前选过的年月日
+					var startDate = dateArrToDate(dateObj.startDate);
+					var endDate = dateArrToDate(dateObj.endDate);
+					$(".startDate").attr("date", dateObj.startDate);
+					$(".endDate").attr("date", dateObj.endDate);
+					$(".startDate .date").html(startDate);
+					$(".endDate .date").html(endDate);
+				}
+				if(selddlb2) { //显示之前选过的年期
+					if(selddlb2.data.length === 1) {
+						var nhqh = selddlb2.data[0];
+						$(".write-box .ddlb2 .sel-font").html(nhqh);
+					} else if(selddlb2.data.length === 2) {
+						var nhqh1 = selddlb2.data[0];
+						var nhqh2 = selddlb2.data[1];
+						$(".write-box .ddlb2 .sel-font").each(function(i, v) {
+							if(i === 0) {
+								v.innerHTML = nhqh1;
+							} else if(i === 1) {
+								v.innerHTML = nhqh2;
+							}
+						})
+					}
+				}
+			}
+
+			function createWriteDom(free) {
+				//动态创建日期选择项
+				var search = localStorage.getItem("search");
+				if(search.indexOf("cs=one") != -1) {
+					$("#content").empty();
+					var div = "<div class='startDate dataPicker'>";
+					div += "<span class='font'>开始日期</span>";
+					div += "<span class='date'>2017年12月22日</span>";
+					div += "<span class='calendar btn mui-icon-extra mui-icon-extra-calendar'></span>";
+					div += "</div>";
+					div += "<div class='filterData'>";
+					div += "<div class='day clearfloat'>";
+					div += "<button id='zt' class='zt fl mui-btn mui-btn-outlined'>昨天</button>";
+					div += "<button id='jt' class='jt fr mui-btn mui-btn-outlined'>今天</button>";
+					div += "</div>";
+					div += "</div>";
+					div += "<div style='margin-top: 10px;width:100%;' class='mui-search'>";
+					div += "<input id='search' style='font-size: 14px;width:80%;vertical-align:top;' type='search' class='mui-input-clear' placeholder='搜索'>";
+					div += "<i id='codeBtn' class='mui-icon-extra mui-icon-extra-sweep' style='width:18%;padding:5px 0px 5px 12px;color:#21bdf9;'></i>"
+					div += "</div>";
+					div += "<div class='write'>";
+					div += "<ul class='write-box'></ul>";
+					div += "</div>";
+					div += "<div style='width: 100%;position: relative;'>";
+					div += "<div class='sure' style='width: 100%;margin:0 auto;'>确定</div>";
+					if(location.search.indexOf("excel=true") >= 0) {
+						div += "<div class='excel' style='width: 100%;margin:0 auto;margin-top:14px;'>电子表格excel</div>";
+					}
+					div += "<div class='setting' style='width: 100%;margin:0 auto;margin-top:14px;'>设置</div>";
+					div += "</div>";
+					$("#content").append(div);
+				} else if(search.indexOf("cs=no") != -1) {
+					$("#content").empty();
+					div = "<div style='margin-top: 10px;width:100%;' class='mui-search'>";
+					div += "<input id='search' style='font-size: 14px;width:80%;vertical-align:top;' type='search' class='mui-input-clear' placeholder='搜索'>";
+					div += "<i id='codeBtn' class='mui-icon-extra mui-icon-extra-sweep' style='width:18%;padding:5px 0px 5px 12px;color:#21bdf9;'></i>"
+					div += "</div>";
+					div += "<div class='write'>";
+					div += "<ul class='write-box'></ul>";
+					div += "</div>";
+					div += "<div style='width: 100%;position: relative;'>";
+					div += "<div class='sure' style='width: 100%;margin:0 auto;'>确定</div>";
+					if(location.search.indexOf("excel=true") >= 0) {
+						div += "<div class='excel' style='width: 100%;margin:0 auto;margin-top:14px;'>电子表格excel</div>";
+					}
+					div += "<div class='setting' style='width: 100%;margin:0 auto;margin-top:14px;'>设置</div>";
+					div += "</div>";
+					$("#content").append(div);
+				} else {
+					$("#content").empty();
+					var div = "<div class='startDate dataPicker'>";
+					div += "<span class='font'>开始日期</span>";
+					div += "<span class='date'>2017年12月22日</span>";
+					div += "<span class='calendar btn mui-icon-extra mui-icon-extra-calendar'></span>";
+					div += "</div>";
+					div += "<div class='endDate dataPicker'>";
+					div += "<span class='font'>结束日期</span>";
+					div += "<span class='date'>2017年12月22日</span>";
+					div += "<span class='calendar btn mui-icon-extra mui-icon-extra-calendar'></span>";
+					div += "</div>";
+					div += "<div class='filterData'>";
+					div += "<div class='day clearfloat'>";
+					div += "<button id='zt' class='zt fl mui-btn mui-btn-outlined'>昨天</button>";
+					div += "<button id='jt' class='jt fr mui-btn mui-btn-outlined'>今天</button>";
+					div += "</div>";
+					div += "<div class='qi clearfloat'>";
+					div += "<button id='sq' class='sq fl mui-btn mui-btn-outlined'>上期</button>";
+					div += "<button id='bq' class='bq fr mui-btn mui-btn-outlined'>本期</button>";
+					div += "</div>";
+					div += "</div>";
+					div += "<div style='margin-top: 10px;width:100%;' class='mui-search'>";
+					div += "<input id='search' style='font-size: 14px;width:80%;vertical-align:top;' type='search' class='mui-input-clear' placeholder='搜索'>";
+					div += "<i id='codeBtn' class='mui-icon-extra mui-icon-extra-sweep' style='width:18%;padding:5px 0px 5px 12px;color:#21bdf9;'></i>"
+					div += "</div>";
+					div += "<div class='write'>";
+					div += "<ul class='write-box'></ul>";
+					div += "</div>";
+					div += "<div style='width: 100%;position: relative;'>";
+					div += "<div class='sure' style='width: 100%;margin:0 auto;'>确定</div>";
+					if(location.search.indexOf("excel=true") >= 0) {
+						div += "<div class='excel' style='width: 100%;margin:0 auto;margin-top:14px;'>电子表格excel</div>";
+					}
+					div += "<div class='setting' style='width: 100%;margin:0 auto;margin-top:14px;'>设置</div>";
+					div += "</div>";
+					$("#content").append(div);
+				}
+
+				//动态创建switch项
+				if(free === undefined) {
+					return false;
+				}
+				var label = free[0].label;
+				var row = free[0].row;
+				var style = free[0].style;
+				localStorage.setItem("styledata", JSON.stringify(style));
+				for(var i = 0; i < row.length; i++) {
+					if(row[i][1] === "ddlb1" || row[i][1] === "ddlb2") {
+						var li = "<li class='li-con clearfloat " + row[i][1] + "' itemname='" + row[i][0] + "' ddlb='" + row[i][1] + "' index='" + i + "'>";
+						li += "<div class='liL fl item-name'>" + label[i] + "</div>";
+						li += "<div class='liR fr item-box'>";
+						li += "<span class='sel-font'>请选择</span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$(".write-box").append(li);
+					} else if(row[i][1] === "html") {
+						var li = "<li class='li-con clearfloat " + row[i][1] + "' itemname='" + row[i][0] + "' ddlb='" + row[i][1] + "' index='" + i + "'>";
+						li += "<div class='liL fl item-name'>" + label[i] + "...</div>";
+						li += "<div class='liR fr item-box'>";
+						li += "<span class='sel-font'></span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$(".write-box").append(li);
+					}
+				}
+				$(".write-box .ddlb1").each(function(index, ele) { //填入保存的ddlb1选择项
+					var selddlb1 = JSON.parse(localStorage.getItem("selddlb1") || '{}');
+					if(selddlb1 !== {} && selddlb1.tit === $("#header h1").html()) {
+						ele.children[1].children[0].innerHTML = selddlb1.data[index];
+					} else {
+						ele.children[1].children[0].innerHTML = '请选择';
+					}
+				});
+
+				$(".write-box .ddlb2").each(function(index, ele) {
+					var itemname = ele.getAttribute("itemname");
+					if(itemname === 'nhqh' || itemname === 'nhqh1' || itemname === 'nhqh2') {
+						$("#content").attr("flag", 'nq'); //添加年期标志
+					}
+				});
+			}
+
+			//			每次加载查询筛选都先从本地获取数据
+			function getLocalToData(currentPage, pageSize) {
+				var localData = JSON.parse(localStorage.getItem("Result")).data;
+				var newData = []; //分段存储数据
+				for(var i = (currentPage - 1) * pageSize; i < (currentPage - 1) * pageSize + pageSize; i++) {
+					if(localData[i] === undefined) {
+						break;
+					};
+					newData.push(localData[i]);
+				}
+				return newData;
+			}
+
+			function getResult(dataArr, allData) {
+				var font = allData.font;
+				//创建tbody
+				var tr = "";
+				var lh = 15;
+				if(allData.dw === "delete" || allData.dw === "true" || allData.dw === "edit" || allData.dw === "tel") {
+					dataArr.forEach(function(item, index) {
+						tr += "<tr  sjcName='" + item[item.length - 1].split("`")[0] + "' spbh='" + item[item.length - 1].split("`")[1] + "' flag='" + item[0] + "' class='trBtn bgcolor" + item[0] + "'>"
+						for(var i = 1; i < item.length - 1; i++) {
+							if(font[i - 1] == 11) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] == 12) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] > 12) {
+								lh = parseInt(font[i - 1]) + 6;
+							}
+							tr += "<td class='textAlign" + allData.alignment[i - 1] + " color" + (i == 1 ? item[0] : 1) + "' style='font-size:" + font[i - 1] + "px; width:" + allData.col_width[i - 1] + "; line-height:" + lh + "px';>" + item[i] + "</td>";
+						};
+						tr += "</tr>";
+					});
+				} else {
+					dataArr.forEach(function(item, index) {
+						tr += "<tr class='trBtn bgcolor" + item[0] + "'>"
+						for(var i = 1; i < item.length; i++) {
+							if(font[i - 1] == 11) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] == 12) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] > 12) {
+								lh = parseInt(font[i - 1]) + 6;
+							}
+							tr += "<td class='textAlign" + allData.alignment[i - 1] + "' style='font-size:" + font[i - 1] + "px; width:" + allData.col_width[i - 1] + "; line-height:" + lh + "px'>" + item[i] + "</td>";
+						};
+						tr += "</tr>";
+					});
+				}
+				$("#tbody").append(tr);
+			}
+
+			//点击表格一行跳转页面
+			var bgcolor = "";
+			var startTime = 0;
+			mui("table").on("touchstart", '.trBtn', function() {
+				bgcolor = getRealStyle(this, "backgroundColor");
+				startTime = Date.now();
+			});
+
+			mui("table").on("touchend", '.trBtn', function() {
+				var endTime = Date.now();
+				var _this = this;
+				if(endTime - startTime < 200) {
+					this.style.backgroundColor = '#e7e7e7';
+					setTimeout(function() {
+						_this.style.backgroundColor = bgcolor;
+					}, 80);
+				}
+			});
+
+			mui("table").on("tap", '.trBtn', function() {
+				var _this = this;
+				var Result = JSON.parse(localStorage.getItem("Result"));
+				var flag = _this.getAttribute("flag");
+				var sjcName = _this.getAttribute("sjcName");
+				var spbh = _this.getAttribute("spbh");
+				var selddlb2 = JSON.parse(localStorage.getItem("selddlb2")); //年期数据
+				var startnq = endnq = ""; //年期
+				if(selddlb2) {
+					if(selddlb2.data.length === 1) { //单年期
+						startnq = selddlb2.data[0];
+					} else if(selddlb2.data.length === 2) { //双年期
+						startnq = selddlb2.data[0];
+						endnq = selddlb2.data[1];
+					}
+				}
+				if(Result.dw === "true" && flag === "0") { //去掉非穿透、小计、合计
+					if(sjcName.indexOf(":") > 1) {
+						localStorage.setItem("sjcNameJson", sjcName); //存json
+						mui.openWindow({
+							url: "penetrateGroup.html",
+							id: "penetrateGroup",
+							waiting: {
+								autoShow: false
+							}
+						});
+					} else {
+						var newDateObj = getnqrq(startnq, endnq, spbh);
+						localStorage.setItem("sjcNameArr", JSON.stringify([sjcName])); //存数据窗名数组
+						localStorage.setItem("newDateObjArr", JSON.stringify([newDateObj])); //存统计条件数组
+						mui.openWindow({
+							url: "pierceQueryResult1.html",
+							id: "pierceQueryResult1.html",
+							waiting: {
+								autoShow: false
+							}
+						});
+					}
+				} else if(Result.dw === "delete" && flag === "0") { //点击删除该项
+					mui.confirm("", "确定删除" + spbh + "？", ['取消', '确定'], function(e) {
+						if(e.index == 1) {
+							var newDateObj = getnqrq(startnq, endnq, spbh);
+							vdn.post({
+								"method": "nvo_edit.exec_dp",
+								"params": [sjcName, JSON.stringify(newDateObj)]
+							}, function(data) {
+								if(data.Result === "ok") {
+									mui.toast("删除" + spbh + "成功");
+									loadAction();
+								}
+							}, function(err) {
+								alert("Code:" + err.Code + ", Message" + err.Message);
+							});
+						}
+					}, 'div');
+				} else if(Result.dw === "edit" && flag === "0") { //点击到编辑页
+					var newDateObj = {
+						"penetrate": spbh
+					}
+					localStorage.setItem("sjcName", sjcName); //存数据窗名数组
+					localStorage.setItem("newDateObj", JSON.stringify(newDateObj)); //存统计条件数组
+					mui.openWindow({
+						url: 'edit.html',
+						id: 'edit',
+						waiting: {
+							autoShow: false
+						}
+					});
+				} else if(Result.dw === "tel" && flag === "0") { //点击打电话
+					if(sjcName != "") {
+						mui.confirm("", "是否拨打" + sjcName + "？", ['否', '是'], function(e) {
+							if(e.index == 1) {
+								plus.device.dial(sjcName, true);
+							}
+						}, 'div');
+					}
+				}
+			});
+
+			function getnqrq(startnq, endnq, spbh) { //年期日期
+				var newDateObj = null;
+				if(isSureTap) {
+					if($("#content").attr("flag") === 'nq') { //年期穿透数据
+						$(".write-box .ddlb2").each(function(i, v) {
+							if($(v).attr("itemname") === "nhqh") { //单年期
+								newDateObj = {
+									"nhqh": startnq,
+									"key": document.getElementById("search").value,
+									"penetrate": spbh
+								}
+								return false;
+							} else { //双年期									
+								newDateObj = {
+									"nhqh1": startnq,
+									"nhqh2": endnq,
+									"key": document.getElementById("search").value,
+									"penetrate": spbh
+								}
+								return false;
+							}
+						})
+					} else { //年月日穿透数据
+						newDateObj = {
+							"startDate": $(".startDate").attr("date"),
+							"endDate": $(".endDate").attr("date"),
+							"key": document.getElementById("search").value,
+							"penetrate": spbh
+						}
+					}
+				} else {
+					newDateObj = {
+						"penetrate": spbh
+					}
+				}
+				return newDateObj;
+			}
+
+			//点击扫码
+			mui("#content").on("tap", "#codeBtn", function() {
+				var fid = plus.webview.currentWebview().id;
+				localStorage.setItem("fid", fid);
+				mui.openWindow({
+					url: 'saoma.html',
+					id: 'saoma',
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			//填充二维码到input中
+			function getCode() {
+				var codeRes = localStorage.getItem("codeRes");
+				$("#search").val(codeRes);
+			}
+
+			mui("#content").on("tap", ".dataPicker", function() { //日期选择
+				//日期选择
+				var date = new Date();
+				var y = date.getFullYear();
+				var m = date.getMonth() + 1;
+				m = m < 10 ? "0" + m : m;
+				var d = date.getDate();
+				d = d < 10 ? "0" + d : d;
+				var selDateArr = [y, m, d];
+				var selDate = selDateArr.join(".");
+				var _this = this.children[2];
+				var optionsJson = this.getAttribute('data-options') || '{}';
+				var options = JSON.parse(optionsJson);
+				var attrDate = _this.parentNode.getAttribute("date");
+				options = {
+					type: "date",
+					beginDate: new Date(1990, 01, 01),
+					endDate: new Date(2090, 12, 30),
+					labels: ['年', '月', '日']
+				}
+				options["value"] = attrDate.split(".").join("-"); //显示上次选择项
+
+				var picker = new mui.DtPicker(options);
+				picker.show(function(rs) {
+					var selDateArr = [rs.y.text, rs.m.text, rs.d.text];
+					var selDate = selDateArr.join(".");
+					_this.parentNode.setAttribute("date", selDate);
+					_this.previousElementSibling.innerHTML = rs.y.value + "年" + rs.m.value + "月" + rs.d.value + "日";
+					picker.dispose();
+				});
+			});
+
+			mui("#content").on("tap", '#zt', function() { //昨天
+				vdn.post({
+					"method": "nvo_nhqh.yestoday"
+				}, function(data) {
+					var date = JSON.parse(data.Result).rq;
+					$(".date").parent().attr("date", date);
+					$(".date").html(dateArrToDate(date));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui("#content").on("tap", "#jt", function() { //今天
+				vdn.post({
+					"method": "nvo_nhqh.today"
+				}, function(data) {
+					var date = JSON.parse(data.Result).rq;
+					$(".date").parent().attr("date", date);
+					$(".date").html(dateArrToDate(date));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui("#content").on("tap", "#sq", function() { //上期
+				var dataJSON = JSON.stringify({
+					"date": ""
+				});
+				vdn.post({
+					"method": "nvo_nhqh.rq2sqksrqjsrq",
+					"params": [dataJSON]
+				}, function(data) {
+					var startDate = JSON.parse(data.Result).ksrq;
+					var endDate = JSON.parse(data.Result).jsrq;
+					$(".startDate").attr("date", startDate);
+					$(".endDate").attr("date", endDate);
+					$(".startDate .date").html(dateArrToDate(startDate));
+					$(".endDate .date").html(dateArrToDate(endDate));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui("#content").on("tap", "#bq", function() { //本期
+				var dataJSON = JSON.stringify({
+					"date": ""
+				});
+				vdn.post({
+					"method": "nvo_nhqh.rq2ksrqjsrq",
+					"params": [dataJSON]
+				}, function(data) {
+					var startDate = JSON.parse(data.Result).ksrq;
+					var endDate = JSON.parse(data.Result).jsrq;
+					$(".startDate").attr("date", startDate);
+					$(".endDate").attr("date", endDate);
+					$(".startDate .date").html(dateArrToDate(startDate));
+					$(".endDate .date").html(dateArrToDate(endDate));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			function toggleSideBar() { //点击侧边栏
+				mui('#offCanvasWrapper').offCanvas('close');
+			}
+
+			function closeSideBar() { //设置完回来刷新和关闭侧边栏
+				var dateObj = localStorage.getItem("dateObj");
+				loadAction(dateObj);
+				mui('#offCanvasWrapper').offCanvas('close');
+			}
+
+			//一级联动
+			mui("#content").on("tap", ".ddlb1", function() {
+				document.getElementById('search').blur();
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var styledata = JSON.parse(localStorage.getItem("styledata"))[index][1]; //根据索引取出数据
+				var itemname = this.getAttribute("itemname");
+				var _this = this;
+				if(ddlb === "ddlb1") {
+					var userPicker = new mui.PopPicker();
+					userPicker.setData(styledata);
+					//设置默认选中项
+					userPicker.pickers[0].items.forEach(function(value, index) {
+						if(value.text === _this.children[1].children[0].innerHTML) {
+							userPicker.pickers[0].setSelectedIndex(index)
+						}
+					})
+					userPicker.show(function(items) {
+						dataArr[itemname] = items[0].text;
+						$(_this).children(".item-box").children(".sel-font").html(items[0].text);
+					});
+				}
+			});
+
+			//二级联动
+			mui("#content").on("tap", ".ddlb2", function() {
+				document.getElementById('search').blur();
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var styledata = JSON.parse(localStorage.getItem("styledata"))[index][1]; //根据索引取出数据
+				var itemname = this.getAttribute("itemname");
+				var _this = this;
+				if(ddlb === "ddlb2") {
+					var yearqi = new mui.PopPicker({
+						layer: 2
+					});
+					yearqi.setData(styledata);
+					yearqi.pickers[0].items.forEach(function(year, i) {
+						if(_this.children[1].children[0].innerHTML.indexOf(year.text) >= 0) {
+							year.children.forEach(function(qi, j) {
+								if(_this.children[1].children[0].innerHTML.indexOf(qi.text) >= 0) {
+									yearqi.pickers[0].setSelectedIndex(i);
+									yearqi.pickers[1].setSelectedIndex(j);
+								}
+							})
+						}
+					});
+					yearqi.show(function(items) {
+						dataArr[itemname] = items[0].text + items[1].text;
+						$(_this).children(".item-box").children(".sel-font").html(items[0].text + items[1].text);
+					});
+				}
+			});
+
+			//跳转到选择默认客户页面
+			mui("#content").on("tap", ".html", function() {
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var htmlName = JSON.parse(localStorage.getItem("styledata"))[index][1]; //根据索引取出数据
+				if(ddlb === "html") {
+					mui.openWindow({
+						url: htmlName,
+						id: htmlName,
+						waiting: {
+							autoShow: false
+						}
+					});
+				}
+			});
+
+			//按键返回退出输入法
+			mui.plusReady(function() {
+				plus.key.addEventListener('backbutton', function() {
+					document.getElementById('search').blur();
+				});
+			})
+		</script>
+		<script>
+			mui("#content").on("tap", ".sure", function() { //点击确定
+				plus.nativeUI.showWaiting('', {
+					background: "#ccc"
+				});
+				var dateObj = JSON.parse(localStorage.getItem("dateObj") || '{}');
+				var startDate = $(".startDate").attr("date") || dateObj.startDate || getDotDate();
+				var endDate = $(".endDate").attr("date") || dateObj.endDate || getDotDate();
+				var sArr = startDate.split(".");
+				var eArr = endDate.split(".");
+				var sms = new Date(sArr[0], sArr[1], sArr[2]).getTime();
+				var ems = new Date(eArr[0], eArr[1], eArr[2]).getTime();
+				loadCurrentPage = 1;
+				if(sms > ems) {
+					plus.nativeUI.closeWaiting();
+					mui.toast("开始日期不能大于结束日期");
+					return false;
+				}
+				var search = document.getElementById('search').value;
+				if(location.search.split("=")[1] === "one") { //为one结束日期==开始日期
+					var dateObj = { //存在本地
+						"startDate": startDate,
+						"endDate": startDate,
+						"key": search
+					};
+				} else if(location.search.split("=")[1] === "no") { //为no日期为当前日期
+					dateObj["key"] = search;
+				} else {
+					var dateObj = {
+						"startDate": startDate,
+						"endDate": endDate,
+						"key": search
+					};
+				}
+				for(val in dataArr) {
+					dateObj[val] = dataArr[val]; //把选择项传入总json
+				}
+
+				localStorage.setItem("dateObj", JSON.stringify(dateObj));
+				mui('#offCanvasWrapper').offCanvas('close');
+				vdn.post({
+					"method": "nvo_bi.get_dw_echarts",
+					"params": [bmp, JSON.stringify(dateObj)]
+				}, function(data) {
+					plus.nativeUI.closeWaiting();
+					if(data.Result == "") {
+						mui.toast("无数据");
+					} else {
+						$(".write-box").empty();
+						createDom(data);
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+
+				var ddlb1item = []; //存储一级联动选择项
+				var ddlb2item = []; //存储二级联动选择项
+				$(".write-box li").each(function(index, ele) {
+					if($(ele).hasClass("ddlb1")) {
+						ddlb1item.push(this.children[1].children[0].innerHTML);
+						var selddlb1 = {
+							tit: $("#header h1").html(),
+							data: ddlb1item
+						}
+						localStorage.setItem("selddlb1", JSON.stringify(selddlb1));
+					}
+				});
+				$(".write-box li").each(function(index, ele) {
+					if($(ele).hasClass("ddlb2")) {
+						var text = this.children[1].children[0].innerHTML === "请选择" ? '' : this.children[1].children[0].innerHTML;
+						ddlb2item.push(text);
+						var selddlb2 = {
+							tit: $("#header h1").html(),
+							data: ddlb2item
+						}
+						localStorage.setItem("selddlb2", JSON.stringify(selddlb2));
+					}
+				});
+				document.getElementById('search').value = "";
+				document.getElementById('search').blur();
+				isSureTap = true;
+				myScroll.refresh();
+			});
+
+			document.addEventListener("plusready", function() {
+				mui("#content").on("tap", ".excel", function() { //点击excel
+					plus.nativeUI.showWaiting('', {
+						background: "#ccc"
+					});
+					var dateObj = JSON.parse(localStorage.getItem("dateObj") || '{}');
+					var startDate = $(".startDate").attr("date") || dateObj.startDate || getDotDate();
+					var endDate = $(".endDate").attr("date") || dateObj.endDate || getDotDate();
+					var sArr = startDate.split(".");
+					var eArr = endDate.split(".");
+					var sms = new Date(sArr[0], sArr[1], sArr[2]).getTime();
+					var ems = new Date(eArr[0], eArr[1], eArr[2]).getTime();
+					if(sms > ems) {
+						mui.toast("开始日期不能大于结束日期");
+						return false;
+					}
+					var search = document.getElementById('search').value;
+					if(location.search.split("=")[1] === "one") { //为one结束日期==开始日期
+						var dateObj = {
+							"startDate": startDate,
+							"endDate": startDate,
+							"key": search
+						};
+					} else if(location.search.split("=")[1] === "no") { //为no日期为当前日期
+						dateObj["key"] = search;
+					} else {
+						var dateObj = {
+							"startDate": startDate,
+							"endDate": endDate,
+							"key": search
+						};
+					}
+
+					vdn.post({
+						"method": "nvo_bi.get_dw_excel",
+						"params": [bmp, JSON.stringify(dateObj)]
+					}, function(data) {
+						plus.nativeUI.closeWaiting();
+						if(data.Result == "") {
+							mui.toast("无数据");
+							return false;
+						}
+						var durl = window.location.origin + data.Result;
+						var dtask = plus.downloader.createDownload(durl, {}, function(d, status) {
+							//下载完成
+							if(status == 200) {
+								if(mui.os.ios) {
+									plus.runtime.openFile(d.filename);
+									mui.toast("请手动打开文件");
+								} else {
+									plus.runtime.openFile(d.filename);
+								}
+							} else {
+								mui.toast("下载失败" + status);
+							}
+						});
+						dtask.start();
+					}, function(err) {
+						alert("Code:" + err.Code + ", Message" + err.Message);
+					})
+				});
+			});
+
+			mui("#content").on("tap", ".setting", function() { //点击设置
+				var webviewId = plus.webview.currentWebview().id;
+				localStorage.setItem("webviewId", webviewId);
+				localStorage.setItem("sjcNameArr", JSON.stringify([bmp]));
+				mui.openWindow({
+					url: "setChart.html",
+					id: "setChart",
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+
+			$('.mui-inner-wrap').on('drag', function(event) {
+				event.stopPropagation();
+			});
+
+			document.getElementById("backdrop").addEventListener("tap", function() {
+				document.getElementById('search').blur();
+			})
+		</script>
+
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+	</body>
+
+</html>

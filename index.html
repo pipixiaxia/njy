@@ -1,0 +1,230 @@
+<!VDNDOC "PageBase":"nvo_main","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<link rel="stylesheet" href="css/mui.css">
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<title>农佳云</title>
+	</head>
+
+	<body>
+		<input type="hidden" id="login" value="" />
+		<input type="hidden" id="dlsm" value="" />
+		<input type="hidden" id="tysm" value="" />
+		<div id="wrapper">
+			<div id="scroller">
+				<div id="pullDown">
+					<span class="pullDownLabel"></span>
+				</div>
+				<div id="thelist">
+					<!--轮播图-->
+					<div class="mainslider mui-slider" style="z-index: 4;">
+						<div class="imgcontent mui-slider-group mui-slider-loop">
+							<!--支持循环，需要重复图片节点-->
+							<div class="mui-slider-item mui-slider-item-duplicate">
+								<a href="#"><img id="one" class="img5" src="" /></a>
+							</div>
+							<div class="mui-slider-item">
+								<a href="#"><img id="two" class="img1" src="" /></a>
+							</div>
+							<div class="mui-slider-item">
+								<a href="#"><img id="three" class="img2" src="" /></a>
+							</div>
+							<div class="mui-slider-item">
+								<a href="#"><img id="four" class="img3" src="" /></a>
+							</div>
+							<div class="mui-slider-item">
+								<a href="#"><img id="five" class="img4" src="" /></a>
+							</div>
+							<div class="mui-slider-item">
+								<a href="#"><img id="six" class="img5" src="" /></a>
+							</div>
+							<!--支持循环，需要重复图片节点-->
+							<div class="mui-slider-item mui-slider-item-duplicate">
+								<a href="#"><img id="seven" class="img1" src="" /></a>
+							</div>
+						</div>
+					</div>
+					<!--九宫格-->
+					<ul class="mainlists mui-table-view mui-grid-view mui-grid-9">
+						
+					</ul>
+				</div>
+				<div id="pullUp" style="display: none;">
+					<span class="pullUpLabel"></span>
+				</div>
+			</div>
+		</div>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script src="js/mui.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/md5.min.js"></script>
+		<script src="js/global.js"></script>
+		<script>
+			mui.init({
+				swipeBack: true
+			});
+
+			function loadAction() {
+				vdn.get({
+					"method": "nvo_main.getpicture"
+				}, function(data) {
+					console.log(data)
+					var obj = JSON.parse(data.Result);
+					var arr = [],
+						arrFirst = null,
+						arrLast = null;
+					for(var key in obj) { //去掉空数据
+						if(obj[key] != "") {
+							arr.push(obj[key]);
+						}
+					}
+					if(arr.length != 1) { //至少两张图才轮播
+						arrFirst = arr[0];
+						arrLast = arr[arr.length - 1];
+						arr.unshift(arrLast); //添加轮播图第一条数据
+						arr.push(arrFirst); //添加轮播图最后一条数据
+					}
+					$(".imgcontent").empty(); //清空轮播图
+					//创建轮播图
+					for(var i = 0; i < arr.length; i++) {
+						if(arr.length == 1) { //一张图取消滑动
+							$(".mainslider").empty();
+							var img = "<img src='' width='100%' id='img" + (i + 1) + "'>";
+							$(".mainslider").append(img);
+						} else {
+							if(i == 0 || i == arr.length - 1) {
+								var div = "<div class='mui-slider-item mui-slider-item-duplicate'>";
+								div += "<a href='#'><img src='' id='img" + (i + 1) + "'></a>";
+								div += "</div>";
+								$(".imgcontent").append(div);
+							} else {
+								var div = "<div class='mui-slider-item'>";
+								div += "<a href='#'><img src='' id='img" + (i + 1) + "'></a>";
+								div += "</div>";
+								$(".imgcontent").append(div);
+							}
+						}
+					}
+
+					mui.plusReady(function() {
+						for(var i = 0; i < arr.length; i++) {
+							(function(arr, i) { //避免异步
+								setTimeout(function() {
+									localload(arr[i], "img" + (i + 1));
+								}, 30);
+							})(arr, i)
+						}
+					});
+
+					vdn.get({
+							"method": "nvo_main.getyhqx_json"
+						}, function(data) {
+							$(".mainlists").empty();
+							//动态循环创建节点
+							$.each(data.Result, function(index, item) {
+								var li = "<li id='ico' gnz=" + item.gnz + " class='mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3'>";
+								li += "<a class='icoa'>";
+								li += "<img class='icoImg' src='images/ico/" + item.bmp + ".png'/>";
+								li += "<div class='icoFont'>" + item.gnz.slice(2) + "</div>";
+								li += "</a>";
+								li += "</li>";
+								$(".mainlists").append(li);
+							});
+						},
+						function(err) {
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						}
+					);
+
+					//轮播图滚动
+					mui('.mui-slider').slider({
+						interval: 6000
+					});
+				});
+
+				//			登录时才显示toast框
+				var dlsm = document.getElementById("dlsm");
+				var tysm = document.getElementById("tysm");
+				(function(dlsm, tysm) {
+					var smval = dlsm.value || tysm.value;
+					if(smval) {
+						var smarr = smval.split("<br>");
+						var smstr = smarr.join("\n");
+						mui.toast(smstr);
+					}
+				})(dlsm, tysm)
+			}
+
+			function localload(url, imgId) {
+				var image_md5 = md5(url);
+				var base64 = plus.storage.getItem(image_md5);
+				if(base64) {
+					document.getElementById(imgId).src = base64; //直接设置base64
+				} else {
+					plus.nativeUI.showWaiting("加载中...", {
+						background: '#ccc'
+					});
+					convertImgToBase64(url, function(base64) {
+						document.getElementById(imgId).src = base64;
+						plus.storage.setItem(image_md5, base64); //存储到plus.storage
+						plus.nativeUI.closeWaiting();
+					});
+				}
+			}
+			
+			function pullUpAction(){//上拉
+				
+			}
+
+			//下拉重新登录
+			function pullDownAction() {
+				var loca = document.getElementById("login").value;
+				location.href = loca;
+			}
+
+			//			点击主列表跳转页面
+			mui(".mainlists").on("tap", "li", function() {
+				var _this = $(this);
+				vdn.get({
+						"method": "nvo_main.getyhqx_gnmx_json",
+						"params": _this.attr("gnz")
+				}, function(data) {
+						//	只有一个列表就直接显示
+						if(data.Result.length == 1) {
+							//取出当前被点击标签上的自定义属性值进行本地存储
+							localStorage.setItem("gnz", _this.attr("gnz"));
+							localStorage.setItem("bmp", data.Result[0].bmp);
+							mui.openWindow({
+								url: data.Result[0].mid,
+								id: "formDateRange.html",
+								waiting: {
+									autoShow: false
+								}
+							});
+						} else {
+							//取出当前被点击标签上的自定义属性值进行本地存储
+							localStorage.setItem("gnz", _this.attr("gnz"));
+							mui.openWindow({
+								url: "mainList.html",
+								id: "mainList.html",
+								waiting: {
+									autoShow: false
+								}
+							});
+						}
+					},
+					function(err) {
+						console.log("Code:" + err.Code + ", Message" + err.Message);
+					}
+				)
+			});
+		</script>
+	</body>
+
+</html>

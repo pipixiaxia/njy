@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<style>
+			body {
+				background-color: #000;
+			}
+			
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			#bcid {
+				height: 400px;
+				margin: 0 auto;
+				margin-top: 44px;
+			}
+			
+			#box {
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+			}
+			
+			#box,
+			ul {
+				height: 90px;
+				background-color: #000;
+			}
+			
+			li {
+				width: 50%;
+				height: 90px;
+				text-align: center;
+				color: #ccc;
+				line-height: 90px;
+				border-bottom: 1px solid #999;
+			}
+			
+			li~li {
+				border-left: 1px solid #999;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a id="backBtn" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">扫码</h1>
+			<a id="flashLamp" class="mui-icon mui-icon-spinner-cycle mui-spin mui-pull-right"></a>
+		</header>
+		<div id="bcid"></div>
+		<div id="box">
+			<ul>
+				<li id="smBtn" class="fl">扫码</li>
+				<li id="fromXc" class="fl">从相册选取</li>
+			</ul>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/global.js"></script>
+		<script> 
+			document.addEventListener("plusready", function() { //开始扫码
+				saoma.start("bcid", false, function(res) {
+					detail(res)
+				});
+			});
+
+			//点击按钮扫码
+			document.getElementById("smBtn").addEventListener("touchstart", function() {
+				saoma.end();
+				saoma.start("bcid", false, function(res) {
+					detail(res)
+				});
+			});
+
+			//从相册选取
+			document.getElementById("fromXc").addEventListener("touchstart", function() {
+				saoma.fromGallery(function(res) {
+					detail(res);
+				});
+			});
+
+			function detail(res) {
+				//存储扫码结果并返回
+				mui.back();
+				localStorage.setItem("codeRes", res)
+				var fid = localStorage.getItem("fid");
+				plus.webview.getWebviewById(fid).evalJS("getCode()");
+			}
+
+			//开关闪光灯
+			var open = false;
+			document.getElementById("flashLamp").addEventListener("touchstart", function() {
+				if(!open) {
+					open = true;
+				} else {
+					open = false;
+				}
+				saoma.openLamp(open);
+			});
+
+			//监听返回按钮，防止闪退
+			plus.key.addEventListener('backbutton', function() {
+				saoma.scan.close();
+			}, false);
+			mui("header").on('tap', '#backBtn', function() {
+				saoma.scan.close();
+			});
+		</script>
+	</body>
+
+</html>

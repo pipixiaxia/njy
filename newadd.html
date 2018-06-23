@@ -1,0 +1,211 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/edit.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+		</header>
+		<div id="wrapper" class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="list" class="ul-con mui-table-view">
+				</ul>
+			</div>
+		</div>
+		<div class="surebox">
+			<button id="sure" type="button" class="sure mui-btn mui-btn-primary">确定</button>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/global.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script>
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});
+
+			var sjcName = localStorage.getItem("sjcName");
+			//var newDateObj = localStorage.getItem("newDateObj");
+			vdn.post({
+				"method": "nvo_bi.get_dw_edit",
+				"params": [sjcName, ""]
+			}, function(data) {
+				createDom(data)
+			}, function(err) {
+				alert("Code:" + err.Code + ", Message" + err.Message);
+			});
+
+			function createDom(res) {
+				var Result = JSON.parse(res.Result);
+				console.log(Result)
+				var data = Result.data;
+				var label = Result.label;
+				var row = Result.row;
+				var style = Result.style;
+				localStorage.setItem("newAddStyle", JSON.stringify(style));
+				var title = Result.titile;
+				$("#header h1").html(title);
+				for(var i = 0; i < row.length; i++) {
+					if(row[i][1] === "hide") {
+						var li = "<li style='display:none;' class='mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span>" + data[0][i] + "</span>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "text") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span style='color:#999;'>" + data[0][i] + "</span>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "minput") {
+						var li = "<li style='height:66px;' class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div style='height:66px;line-height:66px;' class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<textarea class='ipt' rows='3' cols='30'>" + data[0][i] + "</textarea>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "ninput") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<input type='number' class='ipt' value='" + data[0][i] + "'/>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "input") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<input type='number' class='ipt' value='" + data[0][i] + "'/>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "ddlb1") {
+						var li = "<li class='mui-table-view-cell clearfloat " + row[i][1] + "' index='" + i + "' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr' style='width:70%;height:50px;'>";
+						li += "<span class='shenglue' style='width:90%;display:inline-block;text-align:right;'>" + data[0][i] + "</span>";
+						li += "<span class='mui-icon mui-icon-arrowright' style='float:right;margin-top:17px;'></span>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "datetime") {
+						var li = "<li class='mui-table-view-cell clearfloat " + row[i][1] + "' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + convertToDotDate(data[0][i]) + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<span id='date-con'>" + convertToDotDate(data[0][i]) + "</span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "switch") {
+						var li = "<li class='mui-table-view-cell' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<span>" + label[i] + "</span>";
+						li += "<div class='mui-switch mui-switch-mini mui-" + (data[0][i] == 1 ? 'active' : '') + "'>";
+						li += "<div class='mui-switch-handle'></div>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+						mui(".mui-switch").switch();
+					} else if(row[i][1] === "pic") {
+						var li = "<li id='picbtn' class='mui-table-view-cell clearfloat " + row[i][1] + "' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<a id='imga' class='fr'>";
+						li += "<span class='photobox'><img id='photo' src='" + (data[i] ? 'http://xjkjhunter.asuscomm.com:8088' + data[0][i] : './images/tmtp.png') + "'><span></span></span>";
+						li += "<span class='photoicon mui-icon mui-icon-plus'><span>";
+						li += "</a>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "group") {
+						var div = "<div style='height: 12px;width: 100%;background-color: #efeff3;'></div>"
+						$("#list").append(div);
+					} else if(row[i][1] === "map") {
+						var li = "<li class='posibtn mui-table-view-cell' style='height:164px;width:100%;' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='clearfloat' style='height:50px;line-height:50px;border-bottom:1px solid #f0f0f2;'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr' style='height:50px;'>";
+						li += "<span class='shenglue' style='display:inline-block;width:250px;color:#999;text-align:right;'>" + (data[0][i] ? data[0][i].split("`")[0] : '点击获取地址...') + "</span>"
+						li += "</div>";
+						li += "</div>";
+						li += "<div id='map' style='height:70px;width:100%;'>";
+						li += "</div>";
+						li += "<p id='bigPic'  val='" + data[0][i] + "' style='text-align:right;color:#21bdf9;font-size:14px;margin:0'>查看大图</p>";
+						li += "</li>";
+						$("#list").append(li);
+						data[0][i] ? setMap("map", data[0][i].split("`")[1], data[0][i].split("`")[2]) : "";
+					}
+				}
+			}
+
+			//一级联动
+			mui("ul").on("tap", ".ddlb1", function() {
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var item = this.getAttribute("item");
+				var style = JSON.parse(localStorage.getItem("newAddStyle"))[index][1];
+				var _this = this;
+				var userPicker = new mui.PopPicker();
+				userPicker.setData(style);
+				userPicker.show(function(items) {
+					_this.setAttribute("val", items[0].text); //给父li添加val
+					_this.children[1].children[0].innerHTML = items[0].text;
+				});
+			});
+
+			mui("ul").on("tap", ".date", function() { //日期选择
+				var item = this.getAttribute("item");
+				var _this = this;
+				var options = {
+					type: "date",
+					beginDate: new Date(1920, 01, 02),
+					endDate: new Date(2090, 12, 30),
+					labels: ['年', '月', '日']
+				}
+				var picker = new mui.DtPicker(options);
+				picker.show(function(rs) {
+					var selDateArr = [rs.y.text, rs.m.text, rs.d.text];
+					var selDate = selDateArr.join(".");
+					_this.setAttribute("val", selDate); //给父li添加val
+					_this.children[1].children[0].innerHTML = selDate;
+					picker.dispose();
+				});
+			});
+
+			document.getElementById("sure").addEventListener("tap", function() { //确定
+				$('ul .mui-switch').each(function(index, ele) { //循环所有switch
+					$(ele).parent()[0].setAttribute("val", $(ele).hasClass("mui-active")); //给父li添加val
+				});
+				$(".ipt").each(function(index, ele) { //循环输入框
+					$(ele).parent().parent().attr("val", ele.value); //给父li添加val
+				});
+				var dataArr = [];
+				$(".ul-con").children().each(function(index, value) { //遍历所有li获取item和val
+					var item = value.getAttribute("item");
+					var val = value.getAttribute("val");
+					dataArr.push([item, val]);
+				});
+				alert(JSON.stringify(dataArr))
+			});
+		</script>
+	</body>
+
+</html>

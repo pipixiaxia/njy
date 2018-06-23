@@ -1,0 +1,384 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/icons-extra.css"/>
+		<link rel="stylesheet" href="css/mescroll.min.css">
+		<link rel="stylesheet" href="css/swiper-3.3.1.min.css">
+		<link rel="stylesheet" type="text/css" href="css/goodsDetail.css" />
+		<style>
+			.icon {
+				width: 1.8em;
+				height: 1.8em;
+				vertical-align: -0.65em;
+				fill: currentColor;
+				overflow: hidden;
+			}
+			
+			.jiaobiao {
+				width: 15px;
+				height: 15px;
+				line-height: 15px;
+				text-align: center;
+				display: inline-block;
+				background-color: #f33030;
+				border-radius: 50%;
+				color: #fff;
+				position: absolute;
+				top: 0;
+				left: 50%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="head" class="header mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div id="nav" class="nav">
+				<p class="active" i="0">商品</p>
+				<p i="1">详细</p>
+				<p i="2">评价</p>
+			</div>
+		</header>
+
+		<!--轮播-->
+		<div id="swiper" class="swiper-container">
+			<div class="swiper-wrapper">
+
+				<!--商品-->
+				<div id="mescroll0" class="swiper-slide mescroll">
+					<div id="tit"></div>
+					<span id="dataList0" class="data-list"></span>
+				</div>
+
+				<!--详细-->
+				<div id="mescroll1" class="swiper-slide mescroll">
+					<div id="dataList1" class="data-list">
+
+					</div>
+				</div>
+
+				<!--评价-->
+				<div id="mescroll2" class="swiper-slide mescroll">
+					<ul id="dataList2" class="data-list"></ul>
+				</div>
+
+			</div>
+		</div>
+		<div id="carbox">
+			<div class="box">
+				<div id="call">
+					<div class="img mui-icon-extra mui-icon-extra-phone"></div>
+					<div class="font">电话</div>
+				</div>
+				<div id="car">
+					<div class="img mui-icon-extra mui-icon-extra-cart">
+						<span class="jiaobiao"></span>
+					</div>
+					<div class="font">购物车</div>
+				</div>
+				<div id="carin">加入购物车</div>
+			</div>
+		</div>
+	</body>
+
+	<script src="js/mui.min.js"></script>
+	<script src="js/swiper-3.3.1.min.js"></script>
+	<script src="js/mescroll.min.js"></script>
+	<script src="js/mescroll-option.js"></script>
+	<script src="js/jquery-2.1.4.min.js"></script>
+	<script src="js/vdn.js"></script>
+	<script src="js/md5.min.js"></script>
+	<script src="js/global.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		$(function() {
+			var page = {
+				num: 0,
+				size: 10
+			}
+			var curNavIndex = 0; //商品0; 详细1; 评价2;
+			var mescrollArr = new Array(3); //3个菜单所对应的3个mescroll对象
+
+			//初始化首页
+			mescrollArr[0] = initMescroll("mescroll0", "dataList0");
+
+			/*初始化轮播*/
+			var swiper = new Swiper('#swiper', {
+				onTransitionEnd: function(swiper) {
+					var i = swiper.activeIndex; //轮播切换完毕的事件
+					changePage(i);
+				}
+			});
+
+			/*初始化菜单*/
+			$("#nav p").click(function() {
+				var i = Number($(this).attr("i"));
+				swiper.slideTo(i); //以轮播的方式切换列表
+			})
+
+			/*切换列表*/
+			function changePage(i) {
+				if(i != 0) {
+					$("#carbtn").hide();
+				} else {
+					$("#carbtn").show();
+				}
+				if(curNavIndex != i) {
+					//更改列表条件
+					$("#nav p").each(function(n, dom) {
+						if(dom.getAttribute("i") == i) {
+							dom.classList.add("active");
+						} else {
+							dom.classList.remove("active");
+						}
+					})
+					//隐藏当前回到顶部按钮
+					mescrollArr[curNavIndex].hideTopBtn();
+					//取出菜单所对应的mescroll对象,如果未初始化则初始化
+					if(mescrollArr[i] == null) {
+						mescrollArr[i] = initMescroll("mescroll" + i, "dataList" + i);
+					} else {
+						//检查是否需要显示回到到顶按钮
+						var curMescroll = mescrollArr[i];
+						var curScrollTop = curMescroll.getScrollTop();
+						if(curScrollTop >= curMescroll.optUp.toTop.offset) {
+							curMescroll.showTopBtn();
+						} else {
+							curMescroll.hideTopBtn();
+						}
+					}
+					//更新标记
+					curNavIndex = i;
+				}
+			}
+
+			/*创建MeScroll对象*/
+			function initMescroll(mescrollId, clearEmptyId) {
+				//创建MeScroll对象,内部已默认开启下拉刷新,自动执行up.callback,刷新列表数据;
+				var mescroll = new MeScroll(mescrollId, {
+					down: {
+						callback: downCallback
+					},
+					//上拉加载的配置项
+					up: {
+						auto: false,
+						callback: upCallback, //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+						isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+						noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+						empty: {
+							icon: "../res/img/mescroll-empty.png", //图标,默认null
+							tip: "暂无相关数据~", //提示
+							btntext: "去逛逛 >", //按钮,默认""
+							btnClick: function() { //点击按钮的回调,默认null
+								alert("点击了按钮,具体逻辑自行实现");
+							}
+						},
+						clearEmptyId: clearEmptyId, //相当于同时设置了clearId和empty.warpId; 简化写法;默认null
+						toTop: { //配置回到顶部按钮
+							src: "./images/mescroll-master/mescroll-totop.png", //默认滚动到1000px显示,可配置offset修改
+							//offset : 1000
+						}
+					}
+				});
+				return mescroll;
+			}
+
+			/*下拉刷新的回调 */
+			function downCallback() {
+				//加载列表数据
+				page.num = 0;
+				var dataIndex = curNavIndex;
+				getListDataFromNet(dataIndex, page.num, page.size, function(data) {
+					//设置列表数据
+					setListData(data, dataIndex);
+				}, function() {
+					//联网失败的回调,隐藏下拉刷新的状态
+					mescrollArr[dataIndex].endErr();
+				});
+			}
+
+			/*联网加载列表数据  page = {num:1, size:10}; num:当前页 从1开始, size:每页数据条数 */
+			function upCallback(page) {
+				//联网加载数据
+				var dataIndex = curNavIndex; //记录当前联网的nav下标,防止快速切换时,联网回来curNavIndex已经改变的情况;
+				getListDataFromNet(dataIndex, page.num, page.size, function(pageData) {
+					//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+					//mescroll会根据传的参数,自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+					//					mescrollArr[dataIndex].endSuccess(pageData.length);
+
+					//设置列表数据
+					setListData(pageData, dataIndex);
+				}, function() {
+					//联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+					mescrollArr[dataIndex].endErr();
+				});
+			}
+
+			/*设置列表数据
+			 * pageData 当前页的数据
+			 * dataIndex 数据属于哪个nav */
+			function setListData(result, dataIndex) {
+				if(dataIndex == 0) {
+					$("#dataList0").empty();
+					createDom(result, dataIndex)
+				} else if(dataIndex == 1) {
+					$("#dataList1").empty();
+					createDom(result, dataIndex)
+				}
+			}
+
+			function createDom(result, dataIndex) {
+				console.log(JSON.parse(result))
+				if(dataIndex == 0) {
+					mescrollArr[dataIndex].endSuccess(1);
+					$("#tit").html(JSON.parse(result).title)
+					var dataArr = JSON.parse(result).data[0]
+					var newArr = [];
+					var htmlData = null;
+					var phoneData = null;
+					var imgArr = [];
+					var origin = window.location.origin;
+					$(".jiaobiao").html(dataArr[8]);
+					//				去掉空数据
+					for(var i = 0; i < dataArr.length; i++) {
+						if(dataArr[i] == "") {
+							continue;
+						}
+						newArr.push(dataArr[i]);
+					}
+					//				分离不同格式文件
+					for(var i = 0; i < newArr.length; i++) {
+						if(newArr[i].indexOf("html") > -1) {
+							htmlData = newArr[i];
+							localStorage.setItem("htmlData", origin + htmlData);
+						}
+						if(/^[0-9]*$/.test(Number(newArr[i])) && newArr[i].length == 11) {
+							phoneData = newArr[i];
+							localStorage.setItem("phoneData", phoneData);
+						}
+						if(/(.gif|.jpg|.jpeg|.GIF|.JPG|.JPEG|.png)/.test(newArr[i])) {
+							imgArr.push(newArr[i])
+						}
+					}
+					var div = "";
+					for(var i = 0; i < imgArr.length; i++) {
+						div += "<div class='divbtn mui-slider'>";
+						div += "<div class='mui-slider-group'>";
+						div += "<div class='mui-slider-item'>";
+						div += "<span><img src='' id='img"+(i + 1)+"' /><span>";
+						div += "</div>";
+						div += "</div>";
+						div += "</div>";
+					}
+					$("#dataList0").append(div);
+					
+					for(var i = 0; i < imgArr.length; i++) {
+						(function(imgArr, i){ //避免异步
+							setTimeout(function(){
+								localload(imgArr[i], "img" + (i + 1));
+							}, 30);
+						})(imgArr, i)
+					}
+					
+					function localload(url, imgId) {
+						var image_md5 = md5(url);
+						var base64 = plus.storage.getItem(image_md5);
+						if(base64) {
+							document.getElementById(imgId).src = base64; //直接设置base64
+						} else {
+							plus.nativeUI.showWaiting("加载中...");
+							convertImgToBase64(url, function(base64) {
+								document.getElementById(imgId).src = base64;
+								plus.storage.setItem(image_md5, base64); //存储到plus.storage
+								plus.nativeUI.closeWaiting();
+							});
+						}
+					}
+				} else if(dataIndex == 1) {
+					mescrollArr[dataIndex].endSuccess(1);
+					var iframe = "<iframe src='" + result + "'></iframe>";
+					$("#dataList1").append(iframe);
+				}
+			}
+			/*联网加载列表数据
+			 在您的实际项目中,请参考官方写法: http://www.mescroll.com/api.html#tagUpCallback
+			 请忽略getListDataFromNet的逻辑,这里仅仅是在本地模拟分页数据,本地演示用
+			 实际项目以您服务器接口返回的数据为准,无需本地处理分页.
+			 * */
+			function getListDataFromNet(curNavIndex, pageNum, pageSize, successCallback, errorCallback) {
+				try {
+					if(curNavIndex == 0) {
+						//商品
+						var spbh = localStorage.getItem("spbh");
+						vdn.post({
+							"method": "nvo_bi.get_dp",
+							"params": ["bi_khpzxsb_sp_www", spbh]
+						}, function(data) {
+							console.log(JSON.parse(data.Result))
+							var data = data.Result;
+							if(data == "") {
+								mui.toast("无数据");
+							} else {
+								//联网成功的回调
+								successCallback && successCallback(data);
+							}
+						}, function(err) {
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						});
+					} else if(curNavIndex == 1) {
+						//详细
+						var htmlData = localStorage.getItem("htmlData");
+						//联网成功的回调
+						successCallback && successCallback(htmlData);
+					}
+				} catch(e) {
+					errorCallback && errorCallback();
+				}
+			}
+
+			//			拨打电话
+			document.addEventListener("plusready", function() {
+				document.getElementById("call").addEventListener("tap", function() {
+					var phoneNum = localStorage.getItem("phoneData");
+					plus.device.dial(phoneNum, true);
+				})
+			});
+
+			//			加入购物车
+			document.getElementById("carin").addEventListener("tap", function() {
+				var spbh = localStorage.getItem("spbh");
+				vdn.post({
+					"method": "nvo_gwc.jgwc",
+					"params": [spbh]
+				}, function(data) {
+					var result = JSON.parse(data.Result).result;
+					var gwcsl = JSON.parse(data.Result).gwcsl;
+					$(".jiaobiao").html(gwcsl);
+					if(result == "ok") {
+						mui.toast("加入成功")
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			//			点击购物车
+			document.getElementById("car").addEventListener("tap", function() {
+				mui.openWindow({
+					url: "goodsCart.html",
+					id: "goodsCart",
+					waiting: {
+						autoShow: false
+					}
+				})
+			});
+		});
+	</script>
+
+</html>

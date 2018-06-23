@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<style type="text/css">
+			html {
+				height: 100%
+			}
+			
+			body {
+				height: 100%;
+				margin: 0px;
+				padding: 0px
+			}
+			
+			#container {
+				height: 100%;
+				margin-top: 45px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="tit" class="mui-title"></h1>
+		</header>
+		<div id="container"></div>
+
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sw9PK3GKn4SflSLE39OG2xoSlTGfSBgB"></script>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript">
+			var position = JSON.parse(localStorage.getItem("position"));
+			var longitude = position.longitude;
+			var latitude = position.latitude;
+			var addr = position.addr;
+			document.getElementById("tit").innerHTML = addr;
+
+			var map = new BMap.Map("container");
+			map.centerAndZoom(new BMap.Point(longitude, latitude), 11);
+			map.enableScrollWheelZoom(true);
+
+			// 用经纬度设置地图中心点
+			map.clearOverlays();
+			var new_point = new BMap.Point(longitude, latitude);
+			var marker = new BMap.Marker(new_point); // 创建标注
+			map.addOverlay(marker); // 将标注添加到地图中
+			map.panTo(new_point);
+		</script>
+	</body>
+
+</html>

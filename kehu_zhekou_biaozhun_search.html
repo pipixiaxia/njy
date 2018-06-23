@@ -1,0 +1,657 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农家云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css"/>
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="css/kehu_zhekou_biaozhun_search.css"/>
+		<link rel="stylesheet" type="text/css" href="css/iscroll-option.css"/>
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+	</head>
+
+	<body>
+		<!--侧滑菜单容器-->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div id="content" class="continer">
+							<!--<div class="startDate dataPicker">
+								<span class="font">开始日期:</span>
+								<span class="date">2017年12月22日</span>
+								<span class="calendar btn mui-icon-extra mui-icon-extra-calendar"></span>
+							</div>
+							<div class="endDate dataPicker">
+								<span class="font">结束日期:</span>
+								<span class="date">2017年12月22日</span>
+								<span class="calendar iconfont icon-rili btn">123</span>
+							</div>
+							<div class="filterData">
+								<div class="day clearfloat">
+									<button id="zt" class="zt fl mui-btn mui-btn-outlined">昨天</button>
+									<button id="jt" class="jt fr mui-btn mui-btn-outlined">今天</button>
+								</div>
+								<div class="qi clearfloat">
+									<button id="sq" class="sq fl mui-btn mui-btn-outlined">上期</button>
+									<button id="bq" class="bq fr mui-btn mui-btn-outlined">本期</button>
+								</div>
+							</div>
+							<div style="margin-top: 10px;" class="mui-search">
+								<input id="search" style="font-size: 14px;" type="search" class="mui-input-clear" placeholder="搜索">
+							</div>
+							<div class="write">
+								<ul class="write-box">
+
+								</ul>
+							</div>
+							<div style="width: 100%;position: relative;">
+								<div class="sure" style="width: 42%;position: absolute;left: 5%;top: 0;">确定</div>
+								<div class="excel" style="width: 42%;position: absolute;right: 5%;top: 0;">电子表格excel</div>
+							</div>-->
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<header id="header" class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-back mui-pull-left"></a>
+					<a id="offCanvasBtn" href="#offCanvasSide" class="mui-icon mui-action-menu mui-icon-bars mui-pull-right"></a>
+					<h1 class="mui-title"></h1>
+				</header>
+				<div id="wrapper">
+					<div id="scroller">
+						<div id="pullDown">
+							<span class="pullDownLabel">下拉刷新</span>
+						</div>
+						<ul id="newsList" class="news-list">
+							
+						</ul>
+						<div id="pullUp">
+							<span class="pullUpLabel"></span>
+						</div>
+					</div>
+				</div>
+				<div id='tocar' class="tocar"><span class="mui-icon-extra mui-icon-extra-cart"></span></div>
+				<div id="backdrop" class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui-init.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/demoUtils.js"></script>
+		<script src="js/global.js"></script>
+		<script src="js/md5.min.js"></script>
+		<script>
+			var loadCurrentPage = 1;
+			var pageSize = 15;
+			var isSureTap = false;
+			var bmp = localStorage.getItem("bmp");
+			var dataArr = {};
+
+			//初始状态，加载数据
+			function loadAction(param) {
+				loadCurrentPage = 1;
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting('', {
+						background: "#ccc"
+					});
+				});
+				vdn.post({
+					"method": "nvo_bi.get_dw_echarts",
+					"params": [bmp, param]
+				}, function(data) {
+					console.log(JSON.parse(data.Result))
+					if(data.Result == "") {
+						setTimeout(function() {
+							plus.nativeUI.closeWaiting();
+						}, 200);
+						mui.toast("无数据");
+					} else {
+						createDom(data);
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+				myScroll.refresh();
+			}
+
+			//下拉刷新当前数据  
+			function pullDownAction() {
+				setTimeout(function() {
+					$(".write-box").empty();
+					if(isSureTap) {
+						var dateObj = localStorage.getItem("dateObj");
+						loadAction(dateObj);
+					} else {
+						loadAction();
+					}
+				}, 200);
+			}
+			
+			//上拉加载更多数据  
+			function pullUpAction(bool) {
+				var localallDataLen = JSON.parse(localStorage.getItem("Result")).data.length;
+				var domLoadLength = $("#newsList").children().length;
+				if(localallDataLen == domLoadLength) {
+					$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					return;
+				}
+				setTimeout(function() {
+					if(bool === undefined) {
+						var getNewData = getLocalToData(++loadCurrentPage, pageSize);
+						getResult(getNewData, JSON.parse(localStorage.getItem("Result")));
+					}
+					myScroll.refresh();
+				}, 400);
+			}
+
+			function createDom(data) {
+				setTimeout(function() {
+					plus.nativeUI.closeWaiting();
+				}, 200);
+
+				//列表
+				$("#newsList").empty();
+				var tjsm = JSON.parse(data.Result).tjsm;
+				var title = JSON.parse(data.Result).title;
+				var free = JSON.parse(data.Result).free;
+				//动态添加标题
+				$("header").children("h1").html(title);
+				localStorage.setItem("Result", data.Result);
+				//					第1页15条数据
+				var getNewData = getLocalToData(loadCurrentPage, pageSize);
+				getResult(getNewData, JSON.parse(data.Result));
+				myScroll.refresh();
+				createWriteDom(free);
+				
+				var dateObj = JSON.parse(localStorage.getItem("dateObj"));
+				if(dateObj == null) {
+					var date = new Date();
+					var y = date.getFullYear();
+					var m = date.getMonth() + 1;
+					m = m < 10 ? "0" + m : m;
+					var d = date.getDate();
+					d = d < 10 ? "0" + d : d;
+					$(".date").html(y + "年" + m + "月" + d + "日");
+					$(".date").parent().attr("date", y + "." + m + "." + d);
+				} else {
+					var startDate = dateArrToDate(dateObj.startDate);
+					var endDate = dateArrToDate(dateObj.endDate);
+					$(".startDate").attr("date", dateObj.startDate);
+					$(".endDate").attr("date", dateObj.endDate);
+					$(".startDate .date").html(startDate);
+					$(".endDate .date").html(endDate);
+				}
+			}
+			
+			function createWriteDom(free) {
+				//动态创建日期选择项
+				var cs = location.search.split("=")[1];
+				if(cs === "one") {
+					$("#content").empty();
+					var div = "<div class='startDate dataPicker'>";
+					div += "<span class='font'>开始日期</span>";
+					div += "<span class='date'>2017年12月22日</span>";
+					div += "<span class='calendar btn mui-icon-extra mui-icon-extra-calendar'></span>";
+					div += "</div>";
+					div += "<div class='filterData'>";
+					div += "<div class='day clearfloat'>";
+					div += "<button id='zt' class='zt fl mui-btn mui-btn-outlined'>昨天</button>";
+					div += "<button id='jt' class='jt fr mui-btn mui-btn-outlined'>今天</button>";
+					div += "</div>";
+					div += "</div>";
+					div += "<div style='margin-top: 10px;' class='mui-search'>";
+					div += "<input id='search' style='font-size: 14px;' type='search' class='mui-input-clear' placeholder='搜索'>";
+					div += "</div>";
+					div += "<div class='write'>";
+					div += "<ul class='write-box'></ul>";
+					div += "</div>";
+					div += "<div style='width: 100%;position: relative;'>";
+					div += "<div class='sure' style='width: 100%;margin:0 auto;'>确定</div>";
+					div += "</div>";
+					$("#content").append(div);
+				} else if(cs === 'no') {
+					$("#content").empty();
+					div = "<div style='margin-top: 10px;' class='mui-search'>";
+					div += "<input id='search' style='font-size: 14px;' type='search' class='mui-input-clear' placeholder='搜索'>";
+					div += "</div>";
+					div += "<div class='write'>";
+					div += "<ul class='write-box'></ul>";
+					div += "</div>";
+					div += "<div style='width: 100%;position: relative;'>";
+					div += "<div class='sure' style='width: 100%;margin:0 auto;'>确定</div>";
+					div += "</div>";
+					$("#content").append(div);
+				} else if(cs === undefined) {
+					$("#content").empty();
+					var div = "<div class='startDate dataPicker'>";
+					div += "<span class='font'>开始日期</span>";
+					div += "<span class='date'>2017年12月22日</span>";
+					div += "<span class='calendar btn mui-icon-extra mui-icon-extra-calendar'></span>";
+					div += "</div>";
+					div += "<div class='endDate dataPicker'>";
+					div += "<span class='font'>结束日期</span>";
+					div += "<span class='date'>2017年12月22日</span>";
+					div += "<span class='calendar btn mui-icon-extra mui-icon-extra-calendar'></span>";
+					div += "</div>";
+					div += "<div class='filterData'>";
+					div += "<div class='day clearfloat'>";
+					div += "<button id='zt' class='zt fl mui-btn mui-btn-outlined'>昨天</button>";
+					div += "<button id='jt' class='jt fr mui-btn mui-btn-outlined'>今天</button>";
+					div += "</div>";
+					div += "<div class='qi clearfloat'>";
+					div += "<button id='sq' class='sq fl mui-btn mui-btn-outlined'>上期</button>";
+					div += "<button id='bq' class='bq fr mui-btn mui-btn-outlined'>本期</button>";
+					div += "</div>";
+					div += "</div>";
+					div += "<div style='margin-top: 10px;' class='mui-search'>";
+					div += "<input id='search' style='font-size: 14px;' type='search' class='mui-input-clear' placeholder='搜索'>";
+					div += "</div>";
+					div += "<div class='write'>";
+					div += "<ul class='write-box'></ul>";
+					div += "</div>";
+					div += "<div style='width: 100%;position: relative;'>";
+					div += "<div class='sure' style='width: 100%;margin:0 auto;'>确定</div>";
+					div += "</div>";
+					$("#content").append(div);
+				}
+				
+				//动态创建switch项
+				if(free === undefined) {
+					return false;
+				}
+				var label = free[0].label;
+				var row = free[0].row;
+				var style = free[0].style;
+				localStorage.setItem("styledata", JSON.stringify(style));
+				for(var i = 0; i < row.length; i++) {
+					if(row[i][1] === "ddlb1") {
+						var li = "<li class='li-con clearfloat " + row[i][1] + "' itemname='" + row[i][0] + "' ddlb='" + row[i][1] + "' index='" + i + "'>";
+						li += "<div class='liL fl item-name'>" + label[i] + "</div>";
+						li += "<div class='liR fr item-box'>";
+						li += "<span class='sel-font'>请选择</span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$(".write-box").append(li);
+					} else if(row[i][1] === "html") {
+						var li = "<li class='li-con clearfloat " + row[i][1] + "' itemname='" + row[i][0] + "' ddlb='" + row[i][1] + "' index='" + i + "'>";
+						li += "<div class='liL fl item-name'>" + label[i] + "...</div>";
+						li += "<div class='liR fr item-box'>";
+						li += "<span class='sel-font'></span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$(".write-box").append(li);
+					}
+				}
+			}
+
+			//			每次加载查询筛选都先从本地获取数据
+			function getLocalToData(currentPage, pageSize) {
+				var localData = JSON.parse(localStorage.getItem("Result")).data;
+				var newData = []; //分段存储数据
+				for(var i = (currentPage - 1) * pageSize; i < (currentPage - 1) * pageSize + pageSize; i++) {
+					if(localData[i] === undefined) {
+						break;
+					};
+					newData.push(localData[i]);
+				}
+				return newData;
+			}
+
+			function getResult(dataArr, allData) {
+				var origin = window.location.origin;
+				var li = "";
+				for(var i=0; i<dataArr.length; i++){
+					if(dataArr[i][0] === '9'){//合计行
+						li += "<li class='heji goodList clearfloat bgcolor"+dataArr[i][0]+"'><p class='fl'><span>"+dataArr[i][1]+"</span></p><p class='fr'><span>销量:</span><span>"+dataArr[i][4]+"</span></p></li>";
+						continue;
+					}
+					var image_md5 = md5(dataArr[i][2]);
+					li += "<li spbh=" + dataArr[i][1] + " class='goodList clearfloat bgcolor"+dataArr[i][0]+"'>";
+					li += "<div class='li_img fl'>";
+					li += "<img id='" + image_md5 + "' src='' alt='' />";
+					li += "</div>";
+					li += "<div class='li_info fl'>";
+					li += "<p class='title shenglue'><span>名称：</span><span>" + dataArr[i][3] + "</span></p>";
+					li += "<p class='bianhao'><span>编号：</span><span>" + dataArr[i][1] + "</span></p>";
+					li += "<p class='volume'><span>销量：</span><span>" + dataArr[i][4] + "</span></p>";
+					li += "</div>";
+					li += "<div class='caricon fl'><span class='carbtn "+(i>0?'mui-icon-extra mui-icon-extra-cart':'')+"'></span></div>"
+					li += "</li>";
+				}
+				$("#newsList").append(li);
+
+				mui.plusReady(function() {
+					for(var i = 0; i < dataArr.length; i++) {
+						(function(dataArr, i) { //避免异步
+							setTimeout(function() {
+								var image_md5 = md5(dataArr[i][2]);
+								localload(dataArr[i][2], image_md5);
+							}, 30);
+						})(dataArr, i)
+					}
+				});
+			}
+			
+			function localload(url, imgId) {
+				var base64 = plus.storage.getItem(imgId);
+				if(base64) {
+					document.getElementById(imgId).src = base64; //直接设置base64
+				} else {
+					convertImgToBase64(url, function(base64) {
+						document.getElementById(imgId).src = base64;
+						plus.storage.setItem(imgId, base64); //存储到plus.storage
+					});
+				}
+				myScroll.refresh();
+			}
+			
+			mui("ul").on("tap", "li", function() {
+				if($(this).hasClass("bgcolor9")){//合计行不跳转
+					return false;
+				}
+				var bhObj = {
+					"spbh": this.getAttribute("spbh")
+				};
+				localStorage.setItem("spbh", JSON.stringify(bhObj));
+				mui.openWindow({
+					url: "goodsDetail.html",
+					id: "goodsDetail.html",
+					waiting: {
+						autoShow: false
+					}
+				})
+			});
+			
+			mui("#content").on("tap", ".dataPicker", function() { //日期选择
+				//日期选择
+				var date = new Date();
+				var y = date.getFullYear();
+				var m = date.getMonth() + 1;
+				m = m < 10 ? "0" + m : m;
+				var d = date.getDate();
+				d = d < 10 ? "0" + d : d;
+				var selDateArr = [y, m, d];
+				var selDate = selDateArr.join(".");
+				var _this = this.children[2];
+				var optionsJson = this.getAttribute('data-options') || '{}';
+				var options = JSON.parse(optionsJson);
+				options = {
+					type: "date",
+					beginDate: new Date(1990, 01, 02),
+					endDate: new Date(2090, 12, 30),
+					labels: ['年', '月', '日']
+				}
+
+				var picker = new mui.DtPicker(options);
+				picker.show(function(rs) {
+					var selDateArr = [rs.y.text, rs.m.text, rs.d.text];
+					var selDate = selDateArr.join(".");
+					_this.parentNode.setAttribute("date", selDate);
+					_this.previousElementSibling.innerHTML = rs.y.value + "年" + rs.m.value + "月" + rs.d.value + "日";
+					picker.dispose();
+				});
+			});
+			
+			mui("#content").on("tap", '#zt', function() { //昨天
+				vdn.post({
+					"method": "nvo_nhqh.yestoday"
+				}, function(data) {
+					var date = JSON.parse(data.Result).rq;
+					$(".date").parent().attr("date", date);
+					$(".date").html(dateArrToDate(date));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui("#content").on("tap", "#jt", function() { //今天
+				vdn.post({
+					"method": "nvo_nhqh.today"
+				}, function(data) {
+					var date = JSON.parse(data.Result).rq;
+					$(".date").parent().attr("date", date);
+					$(".date").html(dateArrToDate(date));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui("#content").on("tap", "#sq", function() { //上期
+				var dataJSON = JSON.stringify({
+					"date": ""
+				});
+				vdn.post({
+					"method": "nvo_nhqh.rq2sqksrqjsrq",
+					"params": [dataJSON]
+				}, function(data) {
+					var startDate = JSON.parse(data.Result).ksrq;
+					var endDate = JSON.parse(data.Result).jsrq;
+					$(".startDate").attr("date", startDate);
+					$(".endDate").attr("date", endDate);
+					$(".startDate .date").html(dateArrToDate(startDate));
+					$(".endDate .date").html(dateArrToDate(endDate));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui("#content").on("tap", "#bq", function() { //本期
+				var dataJSON = JSON.stringify({
+					"date": ""
+				});
+				vdn.post({
+					"method": "nvo_nhqh.rq2ksrqjsrq",
+					"params": [dataJSON]
+				}, function(data) {
+					var startDate = JSON.parse(data.Result).ksrq;
+					var endDate = JSON.parse(data.Result).jsrq;
+					$(".startDate").attr("date", startDate);
+					$(".endDate").attr("date", endDate);
+					$(".startDate .date").html(dateArrToDate(startDate));
+					$(".endDate .date").html(dateArrToDate(endDate));
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+			
+			//跳转到选择默认客户页面
+			mui("#content").on("tap", ".html", function() {
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var htmlName = JSON.parse(localStorage.getItem("styledata"))[index][1]; //根据索引取出数据
+				if(ddlb === "html") {
+					mui.openWindow({
+						url: htmlName,
+						id: htmlName,
+						waiting: {
+							autoShow: false
+						}
+					});
+				}
+			});
+			
+			mui("#newsList").on("tap", ".carbtn", function(e){//每行加入购物车
+				var spbh = $(this).parent().parent().attr("spbh");
+				vdn.post({
+					"method": "nvo_gwc.jgwc",
+					"params": [JSON.stringify({"spbh":spbh})]
+				}, function(data) {
+					var result = JSON.parse(data.Result).result;
+					if(result == "ok") {
+						mui.toast("加入成功")
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+				e.stopPropagation();
+			});
+			
+			$("body").on("tap", "#tocar", function(){
+				mui.openWindow({
+					url: "goodsCart.html",
+					id: "goodsCart",
+					waiting: {
+						autoShow: false
+					}
+				});
+			})
+			
+			//按键返回退出输入法
+			mui.plusReady(function() {
+				plus.key.addEventListener('backbutton', function() {
+					document.getElementById('search').blur();
+				});
+			})
+			
+			
+			mui("#content").on("tap", ".sure", function() { //点击确定
+				plus.nativeUI.showWaiting('', {
+					background: "#ccc"
+				});
+				var startDate = $(".startDate").attr("date") || "";
+				var endDate = $(".endDate").attr("date") || "";
+				var sArr = startDate.split(".");
+				var eArr = endDate.split(".");
+				var sms = new Date(sArr[0], sArr[1], sArr[2]).getTime();
+				var ems = new Date(eArr[0], eArr[1], eArr[2]).getTime();
+				loadCurrentPage = 1;
+				if(sms > ems) {
+					plus.nativeUI.closeWaiting();
+					mui.toast("开始日期不能大于结束日期");
+					return false;
+				}
+				var search = document.getElementById('search').value;
+				var dateObj = JSON.parse(localStorage.getItem("dateObj") || "{}");
+				if(location.search.split("=")[1] === "one") { //为one结束日期==开始日期
+					var dateObj = { //存在本地
+						"startDate": startDate,
+						"endDate": startDate,
+						"key": search
+					};
+				} else if(location.search.split("=")[1] === "no") { //为no日期为当前日期
+					dateObj["key"] = search;
+				} else {
+					var dateObj = {
+						"startDate": startDate,
+						"endDate": endDate,
+						"key": search
+					};
+				}
+				localStorage.setItem("dateObj", JSON.stringify(dateObj));
+
+				for(val in dataArr) {
+					dateObj[val] = dataArr[val]; //把选择项传入总json
+				}
+				
+				vdn.post({
+					"method": "nvo_bi.get_dw_echarts",
+					"params": [bmp, JSON.stringify(dateObj)]
+				}, function(data) {
+					plus.nativeUI.closeWaiting();
+					if(data.Result == "") {
+						mui.toast("无数据");
+					} else {
+						$(".write-box").empty();
+						createDom(data);
+						mui('#offCanvasWrapper').offCanvas('close');
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+				document.getElementById('search').value = "";
+				document.getElementById('search').blur();
+				isSureTap = true;
+				myScroll.refresh();
+			});
+			
+			document.addEventListener("plusready", function() {
+				mui("#content").on("tap", ".excel", function() { //点击excel
+					plus.nativeUI.showWaiting('', {
+						background: "#ccc"
+					});
+					var startDate = $(".startDate").attr("date") || "";
+					var endDate = $(".endDate").attr("date") || "";
+					var sArr = startDate.split(".");
+					var eArr = endDate.split(".");
+					var sms = new Date(sArr[0], sArr[1], sArr[2]).getTime();
+					var ems = new Date(eArr[0], eArr[1], eArr[2]).getTime();
+					if(sms > ems) {
+						mui.toast("开始日期不能大于结束日期");
+						return false;
+					}
+					var search = document.getElementById('search').value;
+					var dateObj = JSON.parse(localStorage.getItem("dateObj") || "{}");
+					if(location.search.split("=")[1] === "one") { //为one结束日期==开始日期
+						var dateObj = {
+							"startDate": startDate,
+							"endDate": startDate,
+							"key": search
+						};
+					} else if(location.search.split("=")[1] === "no") { //为no日期为当前日期
+						dateObj["key"] = search;
+					} else {
+						var dateObj = {
+							"startDate": startDate,
+							"endDate": endDate,
+							"key": search
+						};
+					}
+
+					vdn.post({
+						"method": "nvo_bi.get_dw_excel",
+						"params": [bmp, JSON.stringify(dateObj)]
+					}, function(data) {
+						console.log(data)
+						plus.nativeUI.closeWaiting();
+						if(data.Result == "") {
+							mui.toast("无数据");
+							return false;
+						}
+						var durl = window.location.origin + data.Result;
+						var dtask = plus.downloader.createDownload(durl, {}, function(d, status) {
+							//下载完成
+							if(status == 200) {
+								if(mui.os.ios) {
+									plus.runtime.openFile(d.filename);
+									mui.toast("请手动打开文件");
+								} else {
+									plus.runtime.openFile(d.filename);
+								}
+							} else {
+								mui.toast("下载失败" + status);
+							}
+						});
+						dtask.start();
+					}, function(err) {
+						alert("Code:" + err.Code + ", Message" + err.Message);
+					})
+				});
+			});
+			
+			$('.mui-inner-wrap').on('drag', function(event) {
+				event.stopPropagation();
+			});
+
+			document.getElementById("backdrop").addEventListener("tap", function() {
+				document.getElementById('search').blur();
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,701 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/edit.css" />
+		<style>
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			
+			p img {
+				max-width: 100%;
+				height: auto;
+			}
+			
+			.mui-preview-indicator {
+				width: 100% !important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<!--<a id="delete" class="mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right"></a>-->
+		</header>
+		<div id="wrapper" class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="list" class="ul-con mui-table-view">
+				</ul>
+			</div>
+		</div>
+		<div class="surebox">
+			<button id="sure" type="button" class="sure mui-btn mui-btn-primary">确定</button>
+		</div>
+
+		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a href="#">上传照片</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture">取消</a>
+				</li>
+			</ul>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/exif.js"></script>
+		<script src="js/global.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/mui.zoom.js"></script>
+		<script src="js/mui.previewimage.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sw9PK3GKn4SflSLE39OG2xoSlTGfSBgB"></script>
+		<script>
+			mui.init({
+				gestureConfig: {
+					longtap: true, //默认为false
+				}
+			});
+
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});
+
+			var sjcName = localStorage.getItem("sjcName");
+			var newDateObj = localStorage.getItem("newDateObj");
+			newDateObj = newDateObj ? newDateObj : "";
+			vdn.post({
+				"method": "nvo_bi.get_dw_edit",
+				"params": [sjcName, newDateObj]
+			}, function(data) {
+				console.log(JSON.parse(data.Result))
+				createDom(data);
+			}, function(err) {
+				alert("Code:" + err.Code + ", Message" + err.Message);
+			});
+
+			function createDom(res) {
+				var Result = JSON.parse(res.Result);
+				var data = Result.data;
+				var label = Result.label;
+				var row = Result.row;
+				var style = Result.style;
+				localStorage.setItem("newAddStyle", JSON.stringify(style));
+				var title = Result.titile;
+				$("#header h1").html(title);
+				if(localStorage.getItem("newDateObj")) { //编辑有newDateObj,新增没有
+					$("#header").append("<a id='delete' class='mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right'></a>");
+				}
+				for(var i = 0; i < row.length; i++) {
+					if(row[i][1] === "hide") {
+						var li = "<li style='display:none;' class='hidden mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span>" + data[0][i] + "</span>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "text") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span style='color:#999;'>" + data[0][i] + "</span>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "minput") {
+						var li = "<li style='height:66px;' class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div style='height:66px;line-height:66px;' class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<textarea class='ipt' rows='3' cols='30'>" + data[0][i] + "</textarea>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "input") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<input type='text' class='ipt' value='" + data[0][i] + "'/>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "ninput") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<input type='number' class='ipt' value='" + data[0][i] + "'/>"
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "ddlb1") {
+						var li = "<li class='mui-table-view-cell clearfloat " + row[i][1] + "' index='" + i + "' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + data[0][i] + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr' style='width:70%;height:50px;'>";
+						li += "<span class='shenglue' style='width:90%;display:inline-block;text-align:right;'>" + data[0][i] + "</span>";
+						li += "<span class='mui-icon mui-icon-arrowright' style='float:right;margin-top:17px;'></span>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "date") {
+						var li = "<li class='mui-table-view-cell clearfloat " + row[i][1] + "' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + convertToDotDate(data[0][i]) + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<span id='date-con'>" +(data[0][i] ? convertToDotDate(data[0][i]) : "") + "</span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					} else if(row[i][1] === "switch") {
+						var li = "<li class='mui-table-view-cell' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<span>" + label[i] + "</span>";
+						li += "<div class='mui-switch mui-switch-mini mui-" + (data[0][i] == 1 ? 'active' : '') + "'>";
+						li += "<div class='mui-switch-handle'></div>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+						mui(".mui-switch").switch();
+					} else if(row[i][1] === "pic") {
+						var li = "<li id='picbtn' class='mui-table-view-cell clearfloat " + row[i][1] + "' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<a class='fr' style='height:80px;line-height:80px;margin-left:10px;width:40px;text-align:center;'>";
+						li += "<span class='photoicon mui-icon mui-icon-plus'><span>";
+						li += "</a>";
+						li += "<div class='photobox fr mui-content' style='overflow:hidden;width:60px'>";
+						li += "<div id='imgcon' class='mui-content-padded' style='margin:0;'>";
+						li += "</div>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+						data[0][i].split("`").forEach(function(value, index) {
+							if(value) {
+								var dom = "<img id='img" + index + "' style='height:80px' src='http://xjkjhunter.asuscomm.com:8088" + value + "' data-preview-src='' data-preview-group='1'>";
+								$("#imgcon").append(dom);
+							}
+						});
+					} else if(row[i][1] === "group") {
+						var div = "<div style='height: 12px;width: 100%;background-color: #efeff3;'></div>"
+						$("#list").append(div);
+					} else if(row[i][1] === "map") {
+						var li = "<li class='posibtn mui-table-view-cell' style='height:164px;width:100%;' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='clearfloat' style='height:50px;line-height:50px;border-bottom:1px solid #f0f0f2;'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr' style='height:50px;'>";
+						li += "<span class='shenglue' style='display:inline-block;width:250px;color:#999;text-align:right;'>" + (data[0][i] ? data[0][i].split("`")[0] : '点击获取地址...') + "</span>"
+						li += "</div>";
+						li += "</div>";
+						li += "<div id='map' style='height:70px;width:100%;'>";
+						li += "</div>";
+						li += "<p id='bigPic'  val='" + data[0][i] + "' style='text-align:right;color:#21bdf9;font-size:14px;margin:0'>查看大图</p>";
+						li += "</li>";
+						$("#list").append(li);
+						data[0][i] ? setMap("map", data[0][i].split("`")[1], data[0][i].split("`")[2]) : "";
+					} else if(row[i][1] === "isedit") {
+						var li = "<li style='display:none;' class='mui-table-view-cell' item='" + row[i][0] + "' val='" + data[0][i] + "'></li>";
+						$("#list").append(li);
+						if(data[0][i] == "0") {
+							$(".surebox").empty();
+							$(".surebox").append("<button id='back' type='button' class='sure mui-btn mui-btn-primary'>返回</button>");
+							$("#delete").remove();
+						}
+					}  else if(row[i][1] === "html") {
+						var li = "<li class='mui-table-view-cell clearfloat htmbtn' htmlLink='" + style[i][1] + "' required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' item=" + row[i][0] + " val='" + data[0][i] + "'>";
+						li += "<div class='fl  " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<span class='mui-icon mui-icon-arrowright fr' style='height:42px;line-height:42px;'></span>"
+						li += "<span class='mcinfo' style='color:#999;float:right;'>" + data[0][i] + "</span>";
+						li += "</div>";
+						li += "</li>";
+						$("#list").append(li);
+					}
+				}
+			}
+			//一级联动
+			mui("ul").on("tap", ".ddlb1", function() {
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var item = this.getAttribute("item");
+				var style = JSON.parse(localStorage.getItem("newAddStyle"))[index][1];
+				var _this = this;
+				var userPicker = new mui.PopPicker();
+				userPicker.setData(style);
+				//设置默认选中项
+				userPicker.pickers[0].items.forEach(function(value, index) {
+					if(value.text === _this.children[1].children[0].innerHTML) {
+						userPicker.pickers[0].setSelectedIndex(index)
+					}
+				});
+				userPicker.show(function(items) {
+					_this.setAttribute("val", items[0].text); //给父li添加val
+					_this.children[1].children[0].innerHTML = items[0].text;
+				});
+			});
+
+			mui("ul").on("tap", ".date", function() { //日期选择
+				var item = this.getAttribute("item");
+				var _this = this;
+				var options = {
+					type: "date",
+					beginDate: new Date(1920, 01, 02),
+					endDate: new Date(2090, 12, 30),
+					labels: ['年', '月', '日']
+				}
+				options["value"] = _this.children[1].children[0].innerHTML.split(".").join("-"); //显示默认项
+				var picker = new mui.DtPicker(options);
+				picker.show(function(rs) {
+					var selDateArr = [rs.y.text, rs.m.text, rs.d.text];
+					var selDate = selDateArr.join(".");
+					_this.setAttribute("val", selDate); //给父li添加val
+					_this.children[1].children[0].innerHTML = selDate;
+					picker.dispose();
+				});
+			});
+			
+			mui("#list").on("tap", ".htmbtn", function() {
+				localStorage.setItem("w", plus.webview.currentWebview().id);
+				localStorage.setItem("liIndex", $(this).index());
+				var htmlLink = this.getAttribute("htmlLink");
+				mui.openWindow({
+					url: htmlLink,
+					id: htmlLink,
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			
+			function getChangeInfo(){//获取select.html页面选中项填入
+				var gysInfo = JSON.parse(localStorage.getItem("gysInfo"));
+				var liIndex = localStorage.getItem("liIndex");
+				var gysmc = gysInfo.gysmc;
+				var gysbh = gysInfo.gysbh;
+				$("#list").children().eq(liIndex).attr("val", gysmc);//找到被点的行
+				$("#list").children().eq(liIndex).find(".mcinfo").html(gysmc);
+				if($("#list").children().eq(liIndex).next().hasClass("hidden")){//再找到被点行的下一隐藏行
+					$("#list").children().eq(liIndex).next().attr("val", gysbh);
+				}
+			}
+
+			//点击地址，无地址就上传地址，有地址就更改地址
+			mui("#list").on("tap", ".posibtn", function() {
+				var _this = this;
+				getMap("map", function(res) {
+					_this.children[0].children[1].children[0].innerHTML = res.addr;
+					var pstr = res.addr + "`" + res.lng + "`" + res.lat;
+					$(_this).attr("val", pstr);
+					$("#bigPic").attr("val", pstr);
+				});
+			});
+
+			mui("#list").on("tap", "#bigPic", function(e) {
+				e.stopPropagation();
+				var val = this.getAttribute("val");
+				if(!val) {
+					mui.toast("请先获取地址");
+					return;
+				}
+				var addr = val.split("`")[0];
+				var lng = val.split("`")[1];
+				var lat = val.split("`")[2];
+
+				//目的地经纬度
+				var addrObj = {
+					"addrName": addr,
+					"endLongitude": lng,
+					"endLatitude": lat
+				}
+				localStorage.setItem("addrObj", JSON.stringify(addrObj));
+				mui.openWindow({
+					url: "openMap.html",
+					id: "openMap",
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+
+			mui('body').on('tap', '.mui-popover-action li>a', function() { //拍照+上传照片
+				var a = this,
+					parent;
+				for(parent = a.parentNode; parent != document.body; parent = parent.parentNode) {
+					if(parent.classList.contains('mui-popover-action')) {
+						break;
+					}
+				}
+				//关闭actionsheet
+				mui('#' + parent.id).popover('toggle');
+				if(a.innerHTML === '拍照') { //拍照
+					var c = plus.camera.getCamera();
+					var fmt = c.supportedImageFormats[0]
+					c.captureImage(function(e) {
+						plus.io.resolveLocalFileSystemURL(e, function(entry) {
+							plus.gallery.save(entry.toLocalURL(),
+								function(e) {
+									mui.toast("保存照片成功");
+								},
+								function(e) {
+									mui.toast("保存照片失败");
+								});
+						});
+					}, function(e) {
+						mui.toast("取消拍照操作");
+					}, {
+						filename: "_doc/",
+						format: fmt,
+						index: 1
+					});
+				} else if(a.innerHTML === '上传照片') { //上传照片
+					plus.gallery.pick(function(path) {
+						var filearr = path.files;
+						var totalBaseArr = [];
+						var w = plus.nativeUI.showWaiting("上传中...");
+						filearr.forEach(function(value, index) {
+							mui.toast("上传第" + (index + 1) + "张照片")
+							imgUrl2Base64(value, index, function(imgData) {
+								totalBaseArr.push(imgData);
+								if(totalBaseArr.length == filearr.length) {
+									vdn.post({
+										"method": "nvo_base64.tm",
+										"params": ["jpg", JSON.stringify({
+											"img": totalBaseArr
+										})]
+									}, function(data) {
+										plus.nativeUI.closeWaiting(w);
+										if(JSON.parse(data.Result).result == "ok") {
+											plus.nativeUI.closeWaiting(w);
+											mui.toast("上传成功");
+											var wz = JSON.parse(data.Result).wz;
+											var imgPathArr = wz.split("`");
+											$("#imgcon").empty();
+											imgPathArr.forEach(function(value, index) {
+												var dom = "<img id='img" + index + "' style='height:80px' src='http://xjkjhunter.asuscomm.com:8088" + value + "' data-preview-src='' data-preview-group='1'>";
+												$("#imgcon").append(dom);
+											});
+											$("#picbtn").attr("val", wz);
+										}
+									}, function(err) {
+										alert("Code:" + err.Code + ", Message" + err.Message);
+									});
+								}
+							});
+						});
+					}, function(err) {
+						mui.toast("取消选择照片");
+					}, {
+						animation: false,
+						multiple: true,
+						maximum: 3,
+						onmaxed: function() {
+							mui.toast("最多只能选择3张图片");
+						},
+						system: false
+					});
+				}
+			});
+
+			mui("body").on("tap", "#picbtn a", function(e) { //打开actionsheet
+				mui('#picture').popover('toggle');
+				e.stopPropagation(); //阻止冒泡
+			});
+
+			mui("body").on("tap", "#picbtn", function(e) { //点照片行
+				if(document.getElementById("picbtn").getAttribute("val") === "") { //没有照片就不打开
+					return false;
+				}
+				mui.trigger(document.getElementById("img0"), 'tap');
+			});
+			mui.previewImage();
+
+			mui("body").on("longtap", "#imgcon", function() { //长按删除图片
+				var path = document.getElementById("picbtn").getAttribute("val");
+				var _this = this;
+				if(path != "") {
+					mui.confirm("", "确定删除图片？", ['取消', '确定'], function(e) {
+						if(e.index == 1) {
+							vdn.post({
+								"method": "nvo_base64.d1",
+								"params": [path]
+							}, function(data) {
+								var result = JSON.parse(data.Result).result;
+								if(result === 'ok') {
+									mui.toast("删除成功")
+									document.getElementById("picbtn").setAttribute("val", '');
+									$(_this).empty();
+								}
+							}, function(err) {
+								alert("Code:" + err.Code + ", Message" + err.Message);
+							});
+						}
+					}, "div");
+				}
+			})
+
+			window.addEventListener('touchmove', function(e) { //上下拖动textarea
+				var target = e.target;
+				if(target && target.tagName === 'TEXTAREA') { //阻止冒泡
+					e.stopPropagation();
+				}
+			}, true);
+
+			mui(".surebox").on("tap", "#sure", function() { //确定
+				var sjcName = localStorage.getItem("sjcName");
+				var dataObj = {};
+				$('ul .mui-switch').each(function(index, ele) { //循环所有switch
+					var flag = $(ele).hasClass("mui-active") ? 1 : 0;
+					$(ele).parent()[0].setAttribute("val", flag); //给父li添加val
+				});
+				$(".ipt").each(function(index, ele) { //循环输入框
+					$(ele).parent().parent().attr("val", ele.value); //给父li添加val
+				});
+				$(".ul-con").children().each(function(index, value) { //遍历所有li获取item和val
+					var required = value.getAttribute("required");
+					var item = value.getAttribute("item");
+					if(!item) {
+						return true;
+					}
+					var val = value.getAttribute("val");
+					if(required == 'true' && val == "") {
+						mui.toast("带红色星号的为必填项");
+						return false;
+					}
+					dataObj[item] = val;
+				});
+				vdn.post({
+					"method": "nvo_edit.exec_dp",
+					"params": [sjcName + '_ok', JSON.stringify(dataObj)]
+				}, function(data) {
+					if(data.Result === 'ok') {
+						mui.back();
+						var w = plus.webview.getWebviewById("formDateRange.html");
+						w.evalJS("loadAction()");
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+			mui(".surebox").on("tap", "#back", function() {
+				mui.back();
+			});
+
+			mui("header").on("tap", "#delete", function() { //右上角删除
+				var sjcName = localStorage.getItem("sjcName");
+				var spbh = JSON.parse(localStorage.getItem("newDateObj")).penetrate;
+				var dataObj = {};
+				$('ul .mui-switch').each(function(index, ele) { //循环所有switch
+					var flag = $(ele).hasClass("mui-active") ? 1 : 0;
+					$(ele).parent()[0].setAttribute("val", flag); //给父li添加val
+				});
+				$(".ipt").each(function(index, ele) { //循环输入框
+					$(ele).parent().parent().attr("val", ele.value); //给父li添加val
+				});
+				$(".ul-con").children().each(function(index, value) { //遍历所有li获取item和val
+					var item = value.getAttribute("item");
+					var val = value.getAttribute("val");
+					dataObj[item] = val;
+				});
+				mui.confirm("", "确定删除" + spbh + "？", ['取消', '确定'], function(e) {
+					if(e.index == 1) {
+						vdn.post({
+							"method": "nvo_edit.exec_dp",
+							"params": [sjcName + '_del', JSON.stringify(dataObj)]
+						}, function(data) {
+							if(data.Result === "ok") {
+								mui.toast("删除" + spbh + "成功")
+								mui.back();
+								var w = plus.webview.getWebviewById("formDateRange.html");
+								w.evalJS("loadAction()");
+							}
+						}, function(err) {
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						});
+					}
+				}, "div");
+			});
+		</script>
+	</body>
+
+</html>

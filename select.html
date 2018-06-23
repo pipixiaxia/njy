@@ -1,0 +1,260 @@
+<!VDNDOC "PageBase":"nvo_bill_zl","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="css/select.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">选择</h1>
+		</header>
+		<div class="searchbody">
+			<form target="frameFile" id="search_from">
+				<input type="search" id="search" class="mui-search" placeholder="请输入" />
+				<iframe name='frameFile' style="display: none;"></iframe>
+			</form>
+			<i id='codeBtn' class='mui-icon-extra mui-icon-extra-sweep' style='padding: 7px 5px 5px 8px;color:#21bdf9;'></i>
+			<div class="searchbtn">
+				<button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-arrowdown">选择</button>
+			</div>
+		</div>
+		<div class="tit"></div>
+		<div id="wrapper">
+			<div id="scroller">
+				<div id="pullDown">
+					<span class="pullDownLabel">下拉刷新</span>
+				</div>
+				<ul id="thelist" class="mui-table-view">
+
+				</ul>
+				<div id="pullUp">
+					<span class="pullUpLabel"></span>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/mui.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/global.js"></script>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script>
+			var loadCurrentPage, findCurrentPage = 1;
+			var pageSize = 20;
+			var sx = location.search.split("=")[1]
+
+			//初始状态，加载数据  
+			function loadAction() {
+				$("#thelist").attr("loadTip", "load");
+				loadCurrentPage = 1;
+				vdn.post({
+					"method": "nvo_bi.get_dp",
+					"params": ["bi_dx", JSON.stringify({
+						"sx": sx,
+						"key": "",
+						"fl": ""
+					})]
+				}, function(data) {
+					console.log(data)
+					var dataArr = JSON.parse(data.Result).data;
+					var arr = getDirrerent2(dataArr, 3); //去重
+					localStorage.setItem("arr", JSON.stringify(arr));
+
+					$('header').children('h1').html(JSON.parse(data.Result).title);
+					$(".tit").html(JSON.parse(data.Result).tjsm);
+					$("#thelist").empty();
+					localStorage.setItem("newData", data.Result);
+					//第1页15条数据
+					var getNewData = getLocalToData(loadCurrentPage, pageSize);
+					getResult(getNewData);
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+				myScroll.refresh();
+			}
+
+			//下拉刷新当前数据  
+			function pullDownAction() {
+				loadAction();
+			}
+
+			//上拉加载更多数据  
+			function pullUpAction(bool) {
+				//ls_end为当前显示列表中最后一个
+				var loadTip = $("#thelist").attr("loadTip");
+				var localallData = JSON.parse(localStorage.getItem("newData")).length;
+				var domLoadLength = $("#thelist").children("li").length
+				if(localallData == domLoadLength) {
+					$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					return;
+				}
+				setTimeout(function() {
+					if(loadTip == "load") {
+						var getNewData = getLocalToData(++loadCurrentPage, pageSize);
+						getResult(getNewData);
+					} else if(loadTip == "find") {
+						var getNewData = getLocalToData(++findCurrentPage, pageSize);
+						getResult(getNewData);
+					}
+					myScroll.refresh();
+				}, 400);
+			}
+
+			mui(".searchbtn").on("tap", "button", function() {
+				var _this = this;
+				var arr = JSON.parse(localStorage.getItem("arr"));
+				var style = []
+				arr.forEach(function(value, index) {
+					style.push({
+						"text": value
+					});
+				});
+				style.push({
+					"text": " "
+				});
+				var userPicker = new mui.PopPicker();
+				userPicker.setData(style);
+				userPicker.show(function(items) {
+					vdn.post({
+						"method": "nvo_bi.get_dp",
+						"params": ["bi_dx", JSON.stringify({
+							"sx": sx,
+							"key": $("#search").val(),
+							"fl": items[0].text
+						})]
+					}, function(data) {
+						if(data.Result == "") {
+							mui.toast("无数据");
+							$("#thelist").empty();
+							$(".tit").html("");
+							return false;
+						}
+						$("#thelist").attr("loadTip", "find");
+						findCurrentPage = 1;
+						$("#thelist").empty();
+						$(".tit").html(JSON.parse(data.Result).tjsm);
+						localStorage.setItem("newData", data.Result);
+						//第1页15条数据
+						var getNewData = getLocalToData(loadCurrentPage, pageSize);
+						getResult(getNewData);
+					}, function(err) {
+						alert("Code:" + err.Code + ", Message" + err.Message);
+					})
+				});
+			});
+
+			//点击扫码
+			mui(".searchbody").on("tap", "#codeBtn", function() {
+				var fid = plus.webview.currentWebview().id;
+				localStorage.setItem("fid", fid);
+				mui.openWindow({
+					url: 'saoma.html',
+					id: 'saoma',
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			//填充二维码到input中
+			function getCode() {
+				var codeRes = localStorage.getItem("codeRes");
+				$("#search").val(codeRes);
+			}
+
+			//输入刷新
+			document.getElementById("search_from").onsubmit = function(){
+				var search = document.getElementById("search");
+				vdn.post({
+					"method": "nvo_bi.get_dp",
+					"params": ["bi_dx", JSON.stringify({
+						"sx": sx,
+						"key": search.value,
+						"fl": ""
+					})]
+				}, function(data) {
+					if(data.Result == "") {
+						mui.toast("无数据");
+						$("#thelist").empty();
+						$(".tit").html("");
+						return false;
+					}
+					$("#thelist").attr("loadTip", "find");
+					findCurrentPage = 1;
+					$("#thelist").empty();
+					$(".tit").html(JSON.parse(data.Result).tjsm);
+					localStorage.setItem("newData", data.Result);
+					//第1页20条数据
+					var getNewData = getLocalToData(loadCurrentPage, pageSize);
+					getResult(getNewData);
+					document.activeElement.blur();
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			}
+
+			//点击行
+			mui("#thelist").on("tap", "li", function() {
+				var gysmc = this.getAttribute("mc");
+				var gysbh = this.getAttribute("bh");
+				localStorage.setItem("gysInfo", JSON.stringify({
+					"gysmc": gysmc,
+					"gysbh": gysbh
+				}));
+				var w = plus.webview.getWebviewById(localStorage.getItem("w"));
+				w.evalJS("getChangeInfo()");
+				mui.back();
+			});
+
+			//每次加载查询筛选都先从本地获取数据
+			function getLocalToData(currentPage, pageSize) {
+				var localData = JSON.parse(localStorage.getItem("newData")).data;
+				var newData = []; //分段存储数据
+				for(var i = (currentPage - 1) * pageSize; i < (currentPage - 1) * pageSize + pageSize; i++) {
+					if(localData[i] === undefined) {
+						break;
+					};
+					newData.push(localData[i]);
+				}
+				return newData;
+			}
+
+			function getResult(dataArr) {
+				var li = "";
+				$.each(dataArr, function(index, item) {
+					li += "<li class='mui-table-view-cell' mc='" + item[1] + "' bh='" + item[2] + "'>";
+					li += "<p class='clearfloat'>";
+					li += "<span class='fl highlight'>" + item[1] + "</span>";
+					li += "<span class='fr'>" + item[3] + "</span>";
+					li += "</p>";
+					li += "<p class='clearfloat'>";
+					li += "<span class='fl'>" + item[4] + "</span>";
+					li += "</p>";
+					li += "</li>";
+				});
+				$("#thelist").append(li);
+				myScroll.refresh();
+			}
+
+			//初始化mui中scroll区域控件
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});
+		</script>
+	</body>
+
+</html>

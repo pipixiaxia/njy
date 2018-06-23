@@ -1,0 +1,49 @@
+<!VDNDOC "PageBase":"nvo_login","IniEvent":"PageIni","NotValidLogin":true>
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/login.css"/>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div class="top_content">
+				<input type="text" name="dwmc" id="inputholder" placeholder="登录农佳云" />
+			</div>
+			<form id='login-form' class="mui-input-group" method="post">
+				<div class="mui-input-row" id="admin">
+					<label>手机</label>
+					<input name="account" id='account' type="text" readonly="readonly">
+				</div>
+				<div class="mui-input-row" id="mm" style="visibility: hidden;height: 0;">
+					<label>密码</label>
+					<input name="password" id='password' showpassword="1" type="text" class="mui-input-clear mui-input" placeholder="请输入密码">
+				</div>
+				<div class="mui-content-padded" id="btn">
+					<button name='login' id='login' class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+				</div>
+				<div class="mui-content-padded oauth-area">
+				</div>
+			</form>
+		</div>
+		
+		<script src="js/mui.js"></script>
+		<script>
+			var search = location.search;
+			if(search == ""){
+				mui.toast("请使用农佳云APP登录", {
+					duration:'3000',
+					verticalAlign: "center"
+				});
+			}
+		</script>
+	</body>
+
+</html>

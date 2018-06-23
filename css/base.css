@@ -1,0 +1,168 @@
+* {
+	padding: 0;
+	margin: 0;
+	outline: 0;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-overflow-scrolling: touch;
+	font-family: simhei, helvetica;
+}
+
+html {
+	background: transparent;
+}
+
+body {
+	width: 100%;
+	background-color: #f0f0f2;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+
+body {
+	color: #333;
+	font-family: simhei, helvetica;
+	font-size: 14px;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+input {
+	font-size: 14px;
+	color: #666;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+	-webkit-appearance: none;
+}
+
+
+/*iframe {
+	position: fixed;
+	top: 49px;
+	bottom: 0px;
+	z-index: 1;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	border: none;
+}*/
+
+a,
+img {
+	text-decoration: none;
+	border: 0 none;
+	padding: 0px;
+	margin: 0px;
+}
+
+ul {
+	padding: 0px;
+	margin: 0px;
+	list-style: none;
+}
+
+button {
+	cursor: pointer;
+	background-color: #ccc;
+}
+
+.fl {
+	float: left;
+}
+
+.fr {
+	float: right;
+}
+
+/*通用颜色*/
+
+.basec {
+	color: #14baf8;
+}
+
+.gray {
+	color: #7e858e;
+}
+
+/* 清除浮动 */
+
+.clearfloat:after {
+	content: "";
+	display: block;
+	visibility: hidden;
+	height: 0;
+	line-height: 0;
+	clear: both;
+}
+
+.clearfloat {
+	zoom: 1;
+}
+
+.fz {
+	font-size: 16px !important;
+}
+
+
+/*header*/
+
+#header {
+	background-color: #fff;
+	box-shadow: 0 0px 0px #fff;
+	border-bottom: 1px solid #f0f0f2;
+}
+
+#header h1 {
+	color: #21bdf9;
+}
+
+#header a {
+	color: #21bdf9;
+}
+
+.mui-scrollbar {
+	display: none !important;
+}
+
+.shenglue {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#pullUp, #pullDown {
+	text-align: center !important;
+}
+
+.pullDownLabel,
+.pullUpLabel {
+	font-size: 12px;
+}
+
+#scroller+div {
+	visibility: hidden;
+}
+
+table {
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+}
+
+th, td {
+	border-left: 0px !important;
+	border-right: 0px !important;
+	padding-top: 7px !important;
+	padding-bottom: 5px !important;
+}
+
+tbody td {
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+}

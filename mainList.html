@@ -1,0 +1,107 @@
+<!VDNDOC "PageBase":"nvo_main","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mainList.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="tit"></h1>
+		</header>
+		<div id="content" class="mui-content">
+			<div class="mui-scroll-wrapper" style="top: 44px;">
+				<div class="mui-scroll">
+					<ul id="mycon">
+						<!--<li class="list1">
+							<a href="#">
+								<span class="bgicon"></span>
+								<span class="tit"></span>
+								<span class="iconright mui-icon mui-icon-arrowright"></span>
+							</a>
+						</li>-->
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/mui.js"></script>
+		<script>
+			mui.init({
+				swipeBack: true
+			});
+
+			$(function() {
+				//				取出主页传过来的值显示标题
+				var gnz = localStorage.getItem("gnz");
+				$("#tit").html(gnz.slice(2));
+				vdn.get({
+						"method": "nvo_main.getyhqx_gnmx_json",
+						"params": gnz
+					}, function(data) {
+						console.log(data)
+						$.each(data.Result, function(index, item) {
+							var li = "<li class='list' bmp='" + item.bmp + "' mid='" + item.mid + "' gnmc='" + item.gnmc + "' gnbh='" + item.gnbh + "'>";
+							li += "<a>";
+							li += "<span class='bgicon'></span>";
+							li += "<span class='tit'>" + item.gnmc + "</span>";
+							li += "<span class='iconright mui-icon mui-icon-arrowright'></span>";
+							li += "</a>";
+							li += "</li>";
+							$("#mycon").append(li);
+						});
+					},
+					function(err) {
+						console.log(err);
+						alert("Code:" + err.Code + ", Message" + err.Message);
+					}
+				);
+
+				mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005
+				});
+
+				mui("#mycon").on("tap", "li", function() {
+					var mask = mui.createMask(function() {}); //快速遮罩防止二次点击
+					mask.show();
+					var mid = this.getAttribute("mid");
+					var bmp = this.getAttribute("bmp");
+					var gnbh = this.getAttribute("gnbh");
+					localStorage.setItem("bmp", bmp);
+					vdn.get({ //保存操作日志
+							"method": "nvo_login.wf_gnmc",
+							"params": gnbh
+						}, function(data) {
+							console.log(data)
+						},
+						function(err) {
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						}
+					);
+
+					mui.openWindow({
+						url: mid,
+						id: mid,
+						waiting: {
+							autoShow: false
+						}
+					});
+					mask.close();
+				});
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!VDNDOC "PageBase":"nvo_bill_zl","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1,minimum-scale=1">
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/icons-extra.css"/>
+		<link rel="stylesheet" href="css/select_Default_Customer.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+		</header>
+		<div class="searchbody">
+			<div class="searchcontent">
+				<input type="search" id="search" style="width: 80%;vertical-align: top;" placeholder="请输入姓名或手机号" />
+				<i id='codeBtn' class='mui-icon-extra mui-icon-extra-sweep' style='padding: 5px 5px 5px 8px;color:#21bdf9;'></i>
+			</div>
+			<div class="searchbtn">
+				<button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search">
+		            查询
+		        </button>
+			</div>
+		</div>
+		<div id="wrapper">
+			<div id="scroller">
+				<div id="pullDown">
+					<span class="pullDownLabel">下拉刷新</span>
+				</div>
+				<ul id="thelist" class="mui-table-view">
+					<!--<li class="clearfloat">
+						<div class="fl clearfloat" style="width: 80%;padding: 0 4px;">
+							<div style="width: 100%;">
+								<div class="fl clearfloat" style="width: 100%;">
+									<p class="fl"><span>编号：</span><span>123</span></p>
+									<p class="fr"><span>姓名：</span><span>123</span></p>
+								</div>
+							</div>
+							<div style="width: 100%;">
+								<div class="fl clearfloat" style="width: 100%;">
+									<p class="fl"><span>地址：</span><span>123</span></p>
+									<p class="fr"><span>手机：</span><span>123</span></p>
+								</div>
+							</div>
+						</div>
+						<div class="mui-switch mui-switch-mini mui-active fr" style="margin:12px 4px 0 0;">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>-->
+				</ul>
+				<div id="pullUp">
+					<span class="pullUpLabel"></span>
+				</div>
+			</div>
+		</div>
+		<div class="surebox">
+			<button id="sure" type="button" onclick="javascript:__doPostBack(&#39;sure&#39;,&#39;&#39;);" class="sure mui-btn mui-btn-primary" >确定</button>
+		</div>
+		
+		<script src="js/mui.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/iscroll.js"></script>
+		<script src="js/iscroll-option.js"></script>
+		<script>
+			var loadCurrentPage, findCurrentPage = 1;
+			var pageSize = 15;
+
+			//初始状态，加载数据  
+			function loadAction() {
+				$("#thelist").attr("loadTip", "load");
+				loadCurrentPage = 1;
+				vdn.post({
+					"method": "nvo_bi.get_dp",
+					"params": ["bi_yhkhb", ""]
+				}, function(data) {
+					console.log(JSON.parse(data.Result))
+					$('header').children('h1').html(JSON.parse(data.Result).title)
+					$("#thelist").empty();
+					localStorage.setItem("newData", data.Result);
+					//第1页15条数据
+					var getNewData = getLocalToData(loadCurrentPage, pageSize);
+					getResult(getNewData);
+					//调用pullUpAction,不然笫一次会拖不动,传入false表示不加载数据
+					pullUpAction(false);
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				})
+				myScroll.refresh();
+			}
+
+			//下拉刷新当前数据  
+			function pullDownAction() {
+				loadAction();
+			}
+
+			//上拉加载更多数据  
+			function pullUpAction(bool) {
+				//ls_end为当前显示列表中最后一个
+				var loadTip = $("#thelist").attr("loadTip");
+				var localallData = JSON.parse(localStorage.getItem("newData")).length;
+				var domLoadLength = $("#thelist").children("li").length
+				if(localallData == domLoadLength) {
+					$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					return;
+				}
+				setTimeout(function() {
+					//只有手动下拉会加载数据
+					if(bool === undefined) {
+						if(loadTip == "load") {
+							var getNewData = getLocalToData(++loadCurrentPage, pageSize);
+							getResult(getNewData);
+						} else if(loadTip == "find") {
+							var getNewData = getLocalToData(++findCurrentPage, pageSize);
+							getResult(getNewData);
+						}
+					}
+					myScroll.refresh();
+				}, 400);
+			}
+
+			mui(".searchbtn").on("tap", "button", function() {
+				$("#thelist").attr("loadTip", "find");
+				findCurrentPage = 1;
+				var btnHTML = $("#search").val();
+				var search = {
+					val: btnHTML
+				}
+				console.log(JSON.stringify(search));
+				vdn.post({
+					"method": "nvo_bi.get_dp",
+					"params": ["bi_yhkhb", JSON.stringify(search)]
+				}, function(data) {
+					console.log(JSON.parse(data.Result))
+					$("#thelist").empty();
+					if(data.Result == "") {
+						$("#pullUp").children(".pullUpLabel").html("没有更多了");
+					}
+					localStorage.setItem("newData", data.Result);
+					$("#pullUp").children(".pullUpLabel").html("上拉加载更多");
+					//第1页15条数据
+					var getNewData = getLocalToData(findCurrentPage, pageSize);
+					getResult(getNewData);
+					//调用pullUpAction,不然笫一次会拖不动,传入false表示不加载数据
+					pullUpAction(false);
+				}, function(err) {
+					console.log("Code:" + err.Code + ", Message" + err.Message);
+				})
+			});
+
+			//			每次加载查询筛选都先从本地获取数据
+			function getLocalToData(currentPage, pageSize) {
+				var localData = JSON.parse(localStorage.getItem("newData")).data;
+				var newData = []; //分段存储数据
+				for(var i = (currentPage - 1) * pageSize; i < (currentPage - 1) * pageSize + pageSize; i++) {
+					if(localData[i] === undefined) {
+						break;
+					};
+					newData.push(localData[i]);
+				}
+				return newData;
+			}
+
+			function getResult(dataArr) {
+				var li = "";
+				$.each(dataArr, function(index, item) {
+//					li += "<li xm="+item[2]+" class='mui-table-view-cell' khbh="+item[1]+">";
+//					li += "<div class='clearfloat'>";
+//					li += "<p class='fl' style='width:70%'><span>编号：</span><span>"+item[1]+"</span></p>";
+//					li += "<p class='fl' style='width:30%'><span>姓名：</span><span>"+item[2]+"</span></p>";
+//					li += "</div>";
+//					li += "<div class='clearfloat'>";
+//					li += "<p class='fl' style='width:70%'><span>手机：</span><span>"+item[3]+"</span></p>";
+//					li += "<p class='fl' style='width:30%'><span>地址：</span><span>"+item[4]+"</span></p>";
+//					li += "</div>";
+//					li += "</li'>";
+
+					li += '<li class="licon clearfloat" xm='+item[3]+' khbh='+item[2]+'>';
+					li += '<div class="fl clearfloat leftbox">';
+					li += '<div style="width: 100%;">';
+					li += '<div class="fl clearfloat" style="width: 100%;">';
+					li += '<p class="fl"><span>编号：</span><span>'+item[2]+'</span></p>';
+					li += '<p class="fr"><span>姓名：</span><span>'+item[3]+'</span></p>';
+					li += '</div></div>';
+					li += '<div style="width: 100%;">';
+					li += '<div class="fl clearfloat" style="width: 100%;">';
+					li += '<p class="fr"><span>手机：</span><span>'+item[4]+'</span></p>';
+					li += '<p class="fl"><span>地址：</span><span>'+item[5]+'</span></p>';
+					li += '</div></div></div>';
+					li += '<div class="fr rightbox mui-radio">';
+					li += '<input class="radioipt" name="radio1" type="radio" '+(item[1]=="1"?'checked=true':'')+'>';
+					li += '</div>';
+					li += "</li>";
+				});
+				$("#thelist").append(li);
+			}
+			
+			mui("#thelist").on("tap", "li", function(){
+				$(this.children[1].children[0]).trigger("click");
+			});
+			
+			document.getElementById("sure").addEventListener("tap", function(){
+				$(".radioipt").each(function(index, inputdom){
+					if(inputdom.checked){
+						var xm = $(inputdom).parent().parent().attr("xm")
+						var khbh = $(inputdom).parent().parent().attr("khbh")
+						var khbhObj = {"khbh": khbh};
+						var khbhArr = [JSON.stringify(khbhObj)];
+						vdn.post({
+							"method": "nvo_xzkh.xzkh",
+							"params": khbhArr
+						}, function(data){
+							if(data.Result == "ok"){
+								mui.toast("选择"+xm+"成功");
+								setTimeout(function(){
+									mui.back();
+								},1000);
+							}
+						}, function(err){
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						});
+					}
+				})
+			});
+			
+			//点击扫码
+			mui(".searchcontent").on("tap", "#codeBtn", function(){
+				var fid = plus.webview.currentWebview().id;
+				localStorage.setItem("fid", fid);
+				mui.openWindow({
+					url: 'saoma.html',
+					id: 'saoma',
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			//填充二维码到input中
+			function getCode(){
+				var codeRes = localStorage.getItem("codeRes");
+				$("#search").val(codeRes);
+			}
+		
+			//初始化mui中scroll区域控件
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});		
+		</script>
+	</body>
+
+</html>

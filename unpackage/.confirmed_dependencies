@@ -1,0 +1,34 @@
+{
+  "index.html": {
+    "resources": [
+      "images/three.jpg",
+      "css/index.css",
+      "images/one.jpg",
+      "images/two.jpg",
+      "js/vdn.js",
+      "js/template.js",
+      "js/mui.js",
+      "css/mui.css",
+      "js/jquery-2.1.4.min.js"
+    ],
+    "refer": [
+      "dataInput.html",
+      "archivesManager.html"
+    ]
+  },
+  "dataInput.html": {
+    "resources": [
+      "css/base.css",
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "css/dataInput.css"
+    ]
+  },
+  "archivesManager.html": {
+    "resources": [
+      "js/demoUtils.js",
+      "js/iscroll.js",
+      "css/archivesManager.css"
+    ]
+  }
+}

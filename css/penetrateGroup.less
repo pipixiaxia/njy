@@ -1,0 +1,34 @@
+.scrollx {
+    height: 50px;
+    overflow: hidden;
+    margin-top: 44px;
+    background-color: #fff;
+    .scrollx-content {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        .nav li {
+            display: inline-block;
+            margin-bottom: 22px;
+            /*把水平滚动条撑到外面,达到隐藏的目的*/
+            vertical-align: middle;
+            font-size: 14px;
+            color: #000;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #efeff4;
+        }
+        .nav li.active {
+            border-bottom: 1px solid #21bdf9;
+            color: #21bdf9;
+        }
+    }
+}
+
+header {
+    #newadd.newadd {
+        font-size: 17px;
+        padding: 14px 0;
+        margin-right: 6px;
+    }
+}

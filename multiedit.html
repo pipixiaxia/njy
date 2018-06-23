@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/multiedit.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+		</header>
+		<div id="wrapper" class="mui-scroll-wrapper">
+			<div id="container" class="mui-scroll">
+
+			</div>
+		</div>
+		<div class="surebox">
+			<button id="sure" type="button" class="sure mui-btn mui-btn-primary">确定</button>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script src="js/global.js"></script>
+		<script>
+			var sjcName = localStorage.getItem("sjcName");
+			var newDateObj = localStorage.getItem("newDateObj");
+
+			vdn.post({
+				"method": "nvo_bi.get_dw_edit",
+				"params": [sjcName, newDateObj]
+			}, function(data) {
+				var result = JSON.parse(data.Result);
+				localStorage.setItem("result", data.Result);
+				createDom(result)
+				console.log(result)
+			}, function(err) {
+				alert("Code:" + err.Code + ", Message" + err.Message);
+			});
+
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});
+
+			function createDom(result) {
+				var data = result.data;
+				var count = Number(result.detail);
+				var label = result.label;
+				var row = result.row;
+				var style = result.style;
+				var title = result.titile;
+				$("header h1").html(title);
+				if(localStorage.getItem("newDateObj")) { //编辑有newDateObj,新增没有
+					$("#header").append("<a id='delete' class='mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right'></a>");
+				}
+
+				$("#container").append("<ul id='list1' class='ul-con mui-table-view'></ul>"); //非明细部分
+				dataEach(0, row.length - count, 0, "#list1");
+
+				data.forEach(function(value, index) { //明细部分
+					$("#container").append("<ul id='list" + (index + 2) + "' class='ul-con mui-table-view'></ul>");
+					$("#list" + (index + 2)).append("<li class='del mui-table-view-cell' style='height: 20px;line-height: 20px;width: 100%;color:#ccc;background-color: #F0F0F2;'><span class='fl'>明细" + (index + 1) + "</span><span class='fr'>删除</span></li>");
+					dataEach(row.length - count, row.length, index, "#list" + (index + 2));
+				});
+
+				var div = "<div id='add' style='height: 50px;line-height: 50px;background-color: #fff;color: #21bdf9;text-align: center;width: 100%;'>+增加明细</div>";
+				$("#container").append(div);
+			}
+
+			mui("#container").on("tap", "#add", function() { //增加明细
+				var result = JSON.parse(localStorage.getItem("result"));
+				var data = result.data;
+				var count = Number(result.detail);
+				var label = result.label;
+				var row = result.row;
+				var style = result.style;
+
+				var uls = $("#container").children("ul");
+				$("#add").before("<ul id='list" + (uls.length + 1) + "' class='ul-con mui-table-view'></ul>");
+				dataEach(row.length - count, row.length, -1, "#list" + (uls.length + 1));
+				$("ul .del").remove();
+				$("ul").each(function(i, uldom) {
+					if(i > 0) {
+						$($(uldom).children()[0]).before("<li class='del mui-table-view-cell' style='height: 20px;line-height: 20px;width: 100%;color:#ccc;background-color: #F0F0F2;'><span class='fl'>明细" + i + "</span><span class='fr'>删除</span></li>")
+					}
+				})
+			});
+
+			mui("#container").on("tap", ".del", function() { //删除明细
+				var _this = this;
+				var info = $(this).children()[0].innerHTML;
+				mui.confirm("", "确定删除" + info + "？", ['取消', '确定'], function(e) {
+					if(e.index == 1) {
+						$(_this).parent().remove();
+						$("#container ul").each(function(i, uldom) {
+							if(i > 0) {
+								uldom.children[0].children[0].innerHTML = '明细' + i;
+							}
+							uldom.id = 'list' + (i + 1);
+						});
+					}
+				}, "div");
+			});
+
+			mui("#container").on("tap", ".ddlb1", function() { //一级联动
+				var result = JSON.parse(localStorage.getItem("result"));
+				var style = result.style;
+				var _this = this;
+				if($(this).hasClass("ddlb1")) {
+					var index = this.getAttribute("index");
+					var data = style[index][1];
+					var userPicker = new mui.PopPicker();
+					userPicker.setData(data);
+					//设置默认选中项
+					userPicker.pickers[0].items.forEach(function(value, index) {
+						if(value.text === _this.children[1].children[0].innerHTML) {
+							userPicker.pickers[0].setSelectedIndex(index)
+						}
+					});
+					userPicker.show(function(items) {
+						_this.setAttribute("val", items[0].text); //给父li添加val
+						_this.children[1].children[0].innerHTML = items[0].text;
+					});
+				}
+			});
+
+			mui("#container").on("tap", ".htmbtn", function() {
+				console.log(this)
+				localStorage.setItem("ulId", $(this).parent().attr("id"));
+				localStorage.setItem("w", plus.webview.currentWebview().id);
+				var htmlLink = this.getAttribute("htmlLink");
+				mui.openWindow({
+					url: htmlLink,
+					id: htmlLink,
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			
+			function getChangeInfo(){//获取select.html页面选中项填入
+				var ulId = localStorage.getItem("ulId");
+				var gysInfo = JSON.parse(localStorage.getItem("gysInfo"));
+				var gysmc = gysInfo.gysmc;
+				var gysbh = gysInfo.gysbh;
+				$("#"+ulId).children(".mc").attr("val", gysmc);
+				$("#"+ulId).children(".mc").find(".mcinfo").html(gysmc);
+				$("#"+ulId).children(".bh").attr("val", gysbh);
+			}
+			
+			mui(".surebox").on("tap", "#sure", function() {//确定
+				var firstObj = {};
+				var totalArr = [];
+				var flag = false;
+				$("#container ul").each(function(i, uldom) {
+					if(i === 0) {
+						$(uldom).children().each(function(j, lidom) { //第一个ul数据
+							var item = $(lidom).attr("item");
+							var val = $(lidom).attr("val");
+							if(item) {
+								firstObj[item] = val;
+							}
+						});
+					} else {
+						var otherObj = {};
+						$(uldom).children().each(function(k, lidom) { //其它ul数据
+							var item = $(lidom).attr("item");
+							var val = $(lidom).attr("val");
+							var required = lidom.getAttribute("required");
+							if(item) {
+								if(required == "true" && !val) {
+									flag = true;
+								} else {
+									otherObj[item] = val;
+									for(key in firstObj) {
+										otherObj[key] = firstObj[key];
+									}
+								}
+							}
+						});
+						totalArr.push(otherObj);
+					}
+				});
+				if(flag) {
+					mui.toast("红色星号为必填项");
+				} else {
+					vdn.post({
+						"method": "nvo_edit.exec_dp",
+						"params": [sjcName + '_ok', JSON.stringify(totalArr)]
+					}, function(data) {
+						console.log(data)
+					}, function(err) {
+						alert("Code:" + err.Code + ", Message" + err.Message);
+					});
+				}
+			});
+			
+			mui("header").on("tap", "#delete", function() {//右上角删除
+				var firstObj = {};
+				var totalArr = [];
+				var flag = false;
+				var spbh = JSON.parse(localStorage.getItem("newDateObj")).penetrate;
+				$("#container ul").each(function(i, uldom) {
+					if(i === 0) {
+						$(uldom).children().each(function(j, lidom) { //第一个ul数据
+							var item = $(lidom).attr("item");
+							var val = $(lidom).attr("val");
+							if(item) {
+								firstObj[item] = val;
+							}
+						});
+					} else {
+						var otherObj = {};
+						$(uldom).children().each(function(k, lidom) { //其它ul数据
+							var item = $(lidom).attr("item");
+							var val = $(lidom).attr("val");
+							var required = lidom.getAttribute("required");
+							if(item) {
+								if(required == "true" && !val) {
+									flag = true;
+								} else {
+									otherObj[item] = val;
+									for(key in firstObj) {
+										otherObj[key] = firstObj[key];
+									}
+								}
+							}
+						});
+						totalArr.push(otherObj);
+					}
+				});
+				mui.confirm("", "确定删除" + spbh + "？", ['取消', '确定'], function(e) {
+					if(e.index == 1) {
+						vdn.post({
+							"method": "nvo_edit.exec_dp",
+							"params": [sjcName + '_del', JSON.stringify(totalArr)]
+						}, function(data) {
+							if(data.Result === "ok") {
+								mui.toast("删除" + spbh + "成功")
+								mui.back();
+								var w = plus.webview.getWebviewById("formDateRange.html");
+								w.evalJS("loadAction()");
+							}
+						}, function(err) {
+							alert("Code:" + err.Code + ", Message" + err.Message);
+						});
+					}
+				}, "div");
+			});
+			
+			mui(".surebox").on("tap", "#back", function() {
+				mui.back();
+			});
+			
+			$("#wrapper").on("input", ".ninput", function(){
+				getinputNumber(this)
+			});
+
+			function dataEach(j, len, n, dom) { //遍历开始位置、遍历长度、data数据索引、ul的id
+				var result = JSON.parse(localStorage.getItem("result"));
+				var data = result.data;
+				var count = Number(result.detail);
+				var label = result.label;
+				var row = result.row;
+				var style = result.style;
+				console.log(j + "-" + len + "-" + n + "-" + dom)
+				for(var i = j; i < len; i++) {
+					var showdata = (n == -1 ? '' : data[n][i]);
+					if(row[i][1] === "hide") {
+						var li = "<li style='display:none;' class='bh mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + showdata + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span>" + showdata + "</span>"
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "text") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + showdata + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span style='color:#999;float:right;'>" + showdata + "</span>"
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "input") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + showdata + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<input type='text' class='ipt' value='" + showdata + "'/>"
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "minput") {
+						var li = "<li style='height:66px;' class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + showdata + "'>";
+						li += "<div style='height:66px;line-height:66px;' class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<textarea class='ipt' rows='3' cols='30'>" + showdata + "</textarea>";
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "ninput") {
+						var li = "<li class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + showdata + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<input type='text' class='ninput ipt' value='" + showdata + "'/>"
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "ddlb1") {
+						var li = "<li class='mui-table-view-cell clearfloat " + row[i][1] + "' index='" + i + "' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + showdata + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr' style='width:70%;height:50px;'>";
+						li += "<span class='shenglue' style='width:90%;display:inline-block;text-align:right;'>" + showdata + "</span>";
+						li += "<span class='mui-icon mui-icon-arrowright' style='float:right;margin-top:17px;'></span>";
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "date") {
+						var li = "<li class='mui-table-view-cell clearfloat " + row[i][1] + "' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + convertToDotDate(showdata) + "'>";
+						li += "<div class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr'>";
+						li += "<span id='date-con'>" + convertToDotDate(showdata) + "</span>";
+						li += "<span class='mui-icon mui-icon-arrowright'></span>";
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "switch") {
+						var li = "<li class='mui-table-view-cell' item=" + row[i][0] + " val='" + showdata + "'>";
+						li += "<span>" + label[i] + "</span>";
+						li += "<div class='mui-switch mui-switch-mini mui-" + (showdata == 1 ? 'active' : '') + "'>";
+						li += "<div class='mui-switch-handle'></div>";
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+						mui(".mui-switch").switch();
+					} else if(row[i][1] === "pic") {
+						var li = "<li id='picbtn' class='mui-table-view-cell clearfloat " + row[i][1] + "' item=" + row[i][0] + " val='" + showdata + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<a id='imga' class='fr'>";
+						li += "<span class='photobox'><img id='photo' src='" + (showdata ? 'http://xjkjhunter.asuscomm.com:8088' + data[n][i] : './images/tmtp.png') + "'><span></span></span>";
+						li += "<span class='photoicon mui-icon mui-icon-plus'><span>";
+						li += "</a>";
+						li += "</li>";
+						$(dom).append(li);
+					} else if(row[i][1] === "html") {
+						var li = "<li class='mc mui-table-view-cell clearfloat htmbtn' htmlLink='" + style[i][1] + "' required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' item=" + row[i][0] + " val='" + showdata + "'>";
+						li += "<div class='fl'>" + label[i] + "</div>";
+						li += "<div class='fr'>";
+						li += "<span class='mui-icon mui-icon-arrowright fr' style='height:42px;line-height:42px;'></span>"
+						li += "<span class='mcinfo' style='color:#999;float:right;'>" + showdata + "</span>";
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
+					}  else if(row[i][1] === "isedit") {
+						if(showdata == "0") {
+							$(".surebox").empty();
+							$(".surebox").append("<button id='back' type='button' class='sure mui-btn mui-btn-primary'>返回</button>");
+							$("#delete").remove();
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

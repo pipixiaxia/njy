@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/swiper-3.3.1.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/formGroup.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+			<a id="offCanvasBtn" href="#offCanvasSide" class="mui-icon mui-action-menu mui-icon-bars mui-pull-right"></a>
+		</header>
+		<div class="scrollx mescroll-touch-x">
+			<div id="scrollxContent" class="scrollx-content">
+				<ul id="nav" class="nav">
+					<!--<li class="active" bmp="d_bi_khxstjb" mid="formDateRange.html" gnbh="t140401002">客户销售</li>-->
+				</ul>
+			</div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/swiper-3.3.1.min.js"></script>
+		<script src="js/global.js"></script>
+		<script>
+			$(function() {
+				var bmp = JSON.parse(localStorage.getItem("bmp"));
+				var name = bmp.name;
+				var title = bmp.title;
+				var dw = bmp.dw;
+				$("#header h1").html(name);
+				dw.forEach(function(value, i) {
+					if(i == 0) {
+						$("#nav").append("<li class='active' bmp='" + value + "'>" + title[i] + "</li>");
+					} else {
+						$("#nav").append("<li bmp='" + value + "'>" + title[i] + "</li>");
+					}
+				});
+				if(dw.length < 6){//平分tab栏
+					var ulWidth = document.getElementById("nav").offsetWidth;
+					var lis = document.getElementById("nav").children;
+					var totalLiWidth = 0;
+					for(var i=0; i<lis.length; i++){
+						totalLiWidth += lis[i].offsetWidth;
+					}
+					var totalPadding = ulWidth - totalLiWidth;
+					var liPadding = totalPadding / (lis.length * 2);
+					for(var i=0; i<lis.length; i++){
+						lis[i].style.paddingLeft = liPadding + 'px';
+						lis[i].style.paddingRight = liPadding + 'px';
+					}
+				}else {
+					var lis = document.getElementById("nav").children;
+					for(var i=0; i<lis.length; i++){
+						lis[i].style.paddingLeft = 10 + 'px';
+						lis[i].style.paddingRight = 10 + 'px';
+					}
+				}
+				
+				showContent(dw[0], 0, window.location.search); //首次加载子页面
+
+				function showContent(bh, n, search) { //报表编号、子页面索引、父页面链接search
+					localStorage.setItem("bmp", bh);
+					if(n == 0) {
+						mui.init({
+							subpages: [{
+								url: "subForm.html" + search,
+								id: "subForm0",
+								styles: {
+									top: "80px",
+									bottom: "0px"
+								}
+							}]
+						});
+						localStorage.setItem("search", window.location.search);
+						localStorage.setItem("subWId", "subForm" + n); //便于首次父传子值
+					} else {
+						var self = plus.webview.currentWebview();
+						var sub = plus.webview.create("subForm.html" + search, "subForm" + n, {
+							top: "80px",
+							bottom: "0px"
+						});
+						self.append(sub);
+					}
+				}
+
+				/*菜单点击事件*/
+				$("#nav li").click(function() {
+					$("#nav").children("li").removeClass("active");
+					$(this).addClass("active");
+					//菜单项居中动画
+					var scrollxContent = document.getElementById("scrollxContent");
+					var star = scrollxContent.scrollLeft; //当前位置
+					var end = this.offsetLeft + this.clientWidth / 2 - document.body.clientWidth / 2; //居中
+					this.style.left = getStep(star, end, function(step, timer) {
+						scrollxContent.scrollLeft = step;
+					});
+					//显示或创建webview
+					var i = $(this).index();
+					var wid = plus.webview.getWebviewById("subForm" + i);
+					if(wid) {
+						wid.show();
+					} else {
+						var bmp = this.getAttribute("bmp");
+						showContent(bmp, i, window.location.search);
+					}
+					localStorage.setItem("subWId", "subForm" + i); //便于父传子值
+				});
+
+				document.getElementById("offCanvasBtn").addEventListener("tap", function() { //点击侧边栏
+					var subWId = localStorage.getItem("subWId");
+					var subW = plus.webview.getWebviewById(subWId);
+					subW.evalJS("toggleSideBar()");
+				});
+			})
+		</script>
+	</body>
+
+</html>

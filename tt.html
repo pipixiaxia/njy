@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<style>
+			.scroll-ul-con {
+				margin-top: 45px;
+				padding-top: 10px;
+			}
+			
+			.scroll-ul-con .li-con {
+				width: 100%;
+				height: 52px;
+				background-color: #fff;
+				line-height: 52px;
+				border-bottom: 1px solid #e7e7e7;
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			
+			.mui-icon {
+				font-size: 18px;
+				color: #21bdf9;
+			}
+			
+			.ipt .iptbox input {
+				margin-bottom: 0;
+				text-align: right;
+				border: none;
+			}
+			
+			.mui-card {
+				margin: 0;
+				box-shadow: none;
+				border-bottom: 1px solid #e7e7e7;
+			}
+			
+			.mui-table-view-cell::after {
+				height: 0px;
+			}
+			
+			button.sure {
+				margin-top: 30px;
+				width: 92%;
+				height: 50px;
+				position: relative;
+				left: 50%;
+				transform: translateX(-50%);
+				border: 1px solid #007aff;
+				border-radius: 5px;
+				background-color: #007aff;
+				color: #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+		</header>
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="scroll-ul-con" class="scroll-ul-con">
+
+				</ul>
+				<button class="sure" id="btn" type="button">确定</button>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script>
+			var dataJson = {
+				"title": "FREE测试",
+				"tjsm": "",
+				"label": ["仓库", "销售分类", "日期", "复选框", "开关", "编辑"],
+				"type": [
+					["ckmc", "ddlb1"],
+					["xsfl", "ddlb2"],
+					["rq", "date"],
+					["checkbox", "checkbox"],
+					["switch", "switch"],
+					["edit", "edit"]
+				],
+				"data": ["韶关饲料", "东城区", "2018.03.30", "2", "25.00"],
+				"style": [
+					["string", [{
+							"text": "成品库管理-成品仓注"
+						},
+						{
+							"text": "江阴创源"
+						},
+						{
+							"text": "韶关饲料"
+						},
+						{
+							"text": "1#成品仓"
+						}
+					]],
+					["string", [{
+							"text": "北京市",
+							"children": [{
+								"text": "东城区"
+							}, {
+								"text": "延庆县"
+							}, {
+								"text": "其它区"
+							}]
+						}, {
+							"text": "天津市",
+							"children": [{
+								"text": "和平区"
+							}, {
+								"text": "蓟县"
+							}, {
+								"text": "其它区"
+							}]
+						}]
+
+					],
+					["date", "date"],
+					["long", "editmask"],
+					["number", "edit"]
+				]
+			}
+		</script>
+		<script>
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});
+
+			document.getElementById("title").innerHTML = dataJson.title;
+			for(var i = 0; i < dataJson.type.length; i++) {
+				if(dataJson.type[i][1] === "ddlb1" || dataJson.type[i][1] === "ddlb2") {
+					var li = "<li class='li-con'>";
+					li += "<div class='liL fl'>" + dataJson.label[i] + "</div>";
+					li += "<div class='liR fr " + dataJson.type[i][1] + "' itemname='" + dataJson.type[i][0] + "' ddlb='" + dataJson.type[i][1] + "' index='" + i + "'>";
+					li += "<span>请选择</span>";
+					li += "<span class='mui-icon mui-icon-arrowright'></span>";
+					li += "</div>";
+					li += "</li>";
+					$("ul").append(li);
+				} else if(dataJson.type[i][1] === "edit") {
+					var li = "<li class='li-con clearfloat ipt'>";
+					li += "<div class='liL fl'>备注</div>";
+					li += "<div class='liR fr iptbox'>";
+					li += "<input type='text' placeholder='请输入备注'/>"
+					li += "</div>";
+					li += "</li>"
+					$("ul").append(li);
+				} else if(dataJson.type[i][1] === "checkbox") {
+					var li = "<li class='mui-card'>";
+					li += "<form class='mui-input-group'>";
+					li += "<div class='mui-input-row mui-checkbox'>";
+					li += "<label>111</label>"
+					li += "<input name='checkbox1' value='Item1' type='checkbox'>";
+					li += "</div>";
+					li += "<div class='mui-input-row mui-checkbox'>";
+					li += "<label>222</label>";
+					li += "<input name='checkbox1' value='Item2' type='checkbox'>";
+					li += "</div>";
+					li += "</form>";
+					li += "</li>";
+					$("ul").append(li);
+				} else if(dataJson.type[i][1] === "switch") {
+					var li = "<li class='mui-table-view-cell li-con'>";
+					li += "<span style='position:absolute;top:0'>123</span>";
+					li += "<div class='mui-switch mui-switch-blue mui-switch-mini mui-active'>";
+					li += "<div class='mui-switch-handle'></div>";
+					li += "</div>";
+					li += "</li>";
+					$("ul").append(li);
+				} else if(dataJson.type[i][1] === "date") {
+					var li = "<li class='li-con'>";
+					li += "<div class='liL fl'>" + dataJson.label[i] + "</div>";
+					li += "<div class='liR fr " + dataJson.type[i][1] + "' itemname='" + dataJson.type[i][0] + "' ddlb='" + dataJson.type[i][1] + "' index='" + i + "'>";
+					li += "<span id='date-con'>请选择</span>";
+					li += "<span class='mui-icon mui-icon-arrowright'></span>";
+					li += "</div>";
+					li += "</li>";
+					$("ul").append(li);
+				}
+			}
+
+			(function() {
+				//日期选择
+				mui("ul").on("tap", '.date', function() {
+					var optionsJson = this.getAttribute('data-options') || '{}';
+					var options = JSON.parse(optionsJson);
+					var _this = this;
+					options = {
+						type: "date",
+						beginDate: new Date(1990, 01, 02),
+						endDate: new Date(2090, 12, 30),
+						labels: ['年', '月', '日']
+					}
+
+					var picker = new mui.DtPicker(options);
+					picker.show(function(rs) {
+						var selDateArr = [rs.y.text, rs.m.text, rs.d.text];
+						var selDate = selDateArr.join(".");
+						console.log(selDate)
+						$(_this).children()[0].innerHTML = selDate;
+						//result.innerText = '选择结果: ' + rs.text;
+						picker.dispose();
+					});
+				});
+			})();
+
+			var dataArr = {};
+
+			//一级联动
+			mui("ul").on("tap", ".ddlb1", function() {
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var itemname = this.getAttribute("itemname");
+				var style = dataJson.style[index][1];
+				var _this = this;
+				if(ddlb === "ddlb1") {
+					var userPicker = new mui.PopPicker();
+					userPicker.setData(style);
+					userPicker.show(function(items) {
+						dataArr[itemname] = items[0].text;
+						$(_this).children()[0].innerHTML = items[0].text;
+					});
+				}
+			});
+
+			//二级联动
+			mui("ul").on("tap", ".ddlb2", function() {
+				var index = this.getAttribute("index");
+				var ddlb = this.getAttribute("ddlb");
+				var itemname = this.getAttribute("itemname");
+				var style = dataJson.style[index][1];
+				var _this = this;
+				if(ddlb === "ddlb2") {
+					var cityPicker = new mui.PopPicker({
+						layer: 2
+					});
+					cityPicker.setData(style);
+					cityPicker.show(function(items) {
+						dataArr[itemname] = {
+							"city": items[0].text,
+							"area": items[1].text
+						};
+						$(_this).children()[0].innerHTML = items[0].text + "-" + items[1].text;
+						console.log("你选择的城市是:" + items[0].text + " " + items[1].text);
+					});
+				}
+			});
+
+			//复选框
+			var arr = {};
+			mui('.mui-input-group').on('change', 'input', function() {
+				var name = $(this).siblings().html();
+				var flag = this.checked;
+				arr[name] = flag;
+				dataArr["checkbox"] = arr;
+			});
+
+			//switch
+			mui('ul .mui-switch').each(function() { //循环所有toggle
+				this.addEventListener('toggle', function(event) {
+					var flag = event.detail.isActive;
+					dataArr["switch"] = flag;
+					console.log(dataArr)
+				});
+			});
+
+			//确定
+			document.getElementById("btn").addEventListener("tap", function() {
+				var txt = $(".iptbox").children().val();
+				dataArr["txt"] = txt;
+				console.log(dataArr)
+				alert(JSON.stringify(dataArr));
+			});
+		</script>
+	</body>
+
+</html>

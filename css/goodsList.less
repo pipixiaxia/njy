@@ -1,0 +1,132 @@
+.searchbody {
+    height: 40px;
+    width: 100%;
+    background-color: #fff;
+    margin-top: 45px;
+    padding: 0 6px 0 6px;
+    position: fixed;
+    z-index: 4;
+}
+
+.searchbody .searchcontent {
+    line-height: 40px;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    padding: 0 80px 0 4px;
+    margin-top: 1px;
+}
+
+.searchbody .searchcontent input {
+    margin-bottom: 0;
+}
+
+.searchbtn {
+    display: inline-block;
+    margin-top: 3px;
+    position: absolute;
+    right: 0;
+    padding-right: 4px;
+}
+
+.searchbtn button {
+    background-color: #21bdf9;
+    border: 1px solid #21BDF9;
+}
+
+//滚动样式
+#wrapper {
+    position: absolute;
+    top: 84px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    #scroller {
+        li {
+            &::after {
+                left: 0;
+            }
+        }
+    }
+}
+
+#pullDown,
+#pullUp {
+    padding: 0 10px;
+    height: 30px;
+    line-height: 30px;
+    color: #888;
+    text-align: center
+}
+
+/*搜索全部*/
+.masktop {
+    top: 15%;
+    left: 15%;
+/*请选择*/
+    .top {
+        height: 40px;
+        background-color: #e2e2e2;
+        border-radius: 12px 12px 0 0;
+        font-family: "微软雅黑";
+        font-size: 16px;
+        text-align: center;
+        line-height: 40px;
+        color: #000;
+    }
+    .center {
+        height: 350px;
+        .myscroll {
+            top: 40px;
+            height: 350px;
+            .lists {
+                li {
+                    text-align: center;
+                }
+                li::after {
+                    left: 0;
+                }
+            }
+        }
+    }
+//  底部加载更多
+    .bottom {
+        height: 40px;
+        background-color: #e2e2e2;
+        border-radius: 0 0 12px 12px;
+        font-family: "微软雅黑";
+        font-size: 16px;
+        text-align: center;
+        line-height: 40px;
+        color: #000;
+        .more {
+            height: 40px;
+            line-height: 40px;
+            color: #fc9f12;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+    }
+}
+
+/*遮罩弹出层*/
+.alertMask {
+    width: 70%;
+    position: fixed;
+    z-index: 12;
+    background-color: #fff;
+    border-radius: 12px;
+    display: none;
+}
+
+/*遮罩蒙板*/
+.mui-backdrop {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.4);
+    display: none;
+}

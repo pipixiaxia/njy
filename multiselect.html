@@ -1,0 +1,152 @@
+<!VDNDOC "PageBase":"nvo_bi","IniEvent":"PageIni","NotClientCache":true>
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>农佳云</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/multiselect.css" />
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+			<a id="allsel" class="allsel mui-pull-right" flag="0">全选</a>
+		</header>
+		<div id="wrapper" class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul class="ul-con mui-table-view">
+					
+				</ul>
+			</div>
+		</div>
+		<div class="surebox">
+			<button id="sure" type="button" class="sure mui-btn mui-btn-primary">确定</button>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/vdn.js"></script>
+		<script>
+			mui.init();
+
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005
+			});
+
+			vdn.post({
+				"method": "nvo_bi.get_dp",
+				"params": ["bi_yhdx", location.search.split("=")[1]]
+			}, function(result) {
+				console.log(JSON.parse(result.Result))
+				var result = JSON.parse(result.Result);
+				var title = result.title;
+				$(".mui-title").html(title);
+				var data = result.data;
+				if(data == ""){
+					mui.toast("无数据");
+					mui.back();
+				}
+				for(var i = 0; i < data.length; i++) {
+					var li = "<li class='mui-table-view-cell'>";
+					li += "<span>" + data[i][2] + "</span>";
+					li += "<div flagnum="+data[i][1]+" xz=" + data[i][3] + " class='mui-switch mui-switch-mini'>";
+					li += "<div class='mui-switch-handle'></div>";
+					li += "</div>";
+					li += "</li>";
+					$("ul").append(li);
+				}
+				
+				$("ul .mui-switch").each(function(index, ele){//1为选中
+					var flagnum = ele.getAttribute("flagnum");
+					if(flagnum === "1"){
+						$(ele).addClass("mui-active");
+					}
+				});
+				mui(".mui-switch").switch();
+			}, function(err) {
+				alert("Code:" + err.Code + ", Message" + err.Message);
+			});
+
+			document.getElementById("allsel").addEventListener("tap", function() { //全选切换
+				var flag = this.getAttribute("flag");
+				if(flag === "1") {
+					this.setAttribute("flag", "0");
+					this.innerHTML = "全选";
+					$("ul .mui-switch").removeClass("mui-active");
+					$("ul .mui-switch").children().each(function(index, ele) {
+						ele.style.transform = "translate(0, 0)";
+						ele.style.webkitTransform = "translate(0, 0)";
+					});
+				} else {
+					this.setAttribute("flag", "1");
+					this.innerHTML = "全不选";
+					$("ul .mui-switch").addClass("mui-active");
+					$("ul .mui-switch").children().each(function(index, ele) {
+						ele.style.transform = "translate(16px, 0)";
+						ele.style.webkitTransform = "translate(16px, 0)";
+					});
+				}
+			});
+			
+			document.querySelector("#sure").addEventListener("tap", function(){
+				var xzArr = [];
+				$("ul .mui-switch").each(function(index, ele) {
+					if($(ele).hasClass("mui-active")) {
+						var xz = ele.getAttribute("xz");
+						xzArr.push(xz);
+					}
+				});
+				vdn.post({
+					"method": "nvo_edit.exec_dp",
+					"params": ["bi_save_yhdx", JSON.stringify({
+						"cs": location.search.split("=")[1],
+						"xz": xzArr.join("`")
+					})] 
+				}, function(data) {
+					if(data.Result === "ok"){
+						var title = $("#header h1").html();
+						mui.toast(title + "成功");
+						setTimeout(function(){
+							mui.back();
+						}, 1000);
+					}
+				}, function(err) {
+					alert("Code:" + err.Code + ", Message" + err.Message);
+				});
+			});
+
+//			mui("#wrapper").on("tap", "#sure", function() { //点击确定
+//				var xzArr = [];
+//				$("ul .mui-switch").each(function(index, ele) {
+//					if($(ele).hasClass("mui-active")) {
+//						var xz = ele.getAttribute("xz");
+//						xzArr.push(xz);
+//					}
+//				});
+//				vdn.post({
+//					"method": "nvo_edit.exec_dp",
+//					"params": ["bi_save_yhdx", JSON.stringify({
+//						"cs": location.search.split("=")[1],
+//						"xz": xzArr.join("`")
+//					})] 
+//				}, function(data) {
+//					if(data.Result === "ok"){
+//						var title = $("#header h1").html();
+//						mui.toast(title + "成功");
+//						setTimeout(function(){
+//							mui.back();
+//						}, 1000);
+//					}
+//				}, function(err) {
+//					alert("Code:" + err.Code + ", Message" + err.Message);
+//				});
+//			})
+		</script>
+	</body>
+
+</html>

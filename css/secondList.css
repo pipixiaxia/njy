@@ -1,0 +1,245 @@
+/*种猪档案管理*/
+/*搜索*/
+.search {
+  width: 100%;
+  height: 60px;
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 10px 4px 10px 4px;
+  top: 45px;
+  z-index: 6;
+  position: absolute;
+}
+.search .inner {
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  position: relative;
+}
+.search .inner input {
+  display: inline-block;
+  width: 49%;
+  margin-bottom: 0px;
+}
+.search .inner input:nth-of-type(1) {
+  text-indent: 18px;
+}
+.search .inner input:nth-of-type(1)::-webkit-input-placeholder {
+  color: #d1d1d1;
+}
+.search .inner input:nth-of-type(2)::-webkit-input-placeholder {
+  font-weight: 600;
+  color: 0d0d0d;
+}
+.search .inner i.left {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-12px);
+  color: #dadada;
+  font-weight: 600;
+}
+.search .inner i.right {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-12px);
+  color: #7a7a7a;
+}
+.outer {
+  margin-left: 4px;
+  margin-right: 4px;
+  background-color: #f0f0f2;
+}
+.outer::before {
+  height: 0;
+}
+.outer::after {
+  height: 0;
+}
+.outer .managerli:nth-of-type(1) {
+  margin-top: 8px;
+}
+.outer .managerli {
+  border: 1px solid #f90;
+  margin-top: 8px;
+  height: 168px;
+  border-radius: 10px 10px 6px 6px;
+  background-color: #fff;
+}
+.outer .managerli .tit {
+  height: 40px;
+  border-bottom: 1px solid #f90;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.outer .managerli .tit .titl {
+  height: 40px;
+  line-height: 40px;
+  font-size: 16px;
+}
+.outer .managerli .tit .titr {
+  height: 40px;
+  line-height: 40px;
+}
+.outer .managerli .tit .titr span {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin-top: 7px;
+  border: 1px solid red;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 28px;
+  text-align: center;
+}
+.outer .managerli .tit .titr .remark {
+  border: 1px solid #ff873d;
+}
+.outer .managerli .tit .titr .modify {
+  border: 1px solid #6bda9f;
+}
+.outer .managerli .tit .titr .del {
+  border: 1px solid #ea7c7e;
+}
+.outer .managerli .con {
+  padding-left: 6px;
+  padding-right: 6px;
+  border-top: 1px solid #f90;
+}
+.outer .managerli .con li {
+  margin-top: 4px;
+}
+.outer .managerli .con li div {
+  display: inline-block;
+}
+.outer .managerli .con li div.fr {
+  width: 50%;
+}
+/*搜索全部*/
+.masktop {
+  top: 15%;
+  left: 15%;
+  /*请选择*/
+}
+.masktop .top {
+  height: 40px;
+  background-color: #e2e2e2;
+  border-radius: 12px 12px 0 0;
+  font-family: "微软雅黑";
+  font-size: 16px;
+  text-align: center;
+  line-height: 40px;
+  color: #000;
+}
+.masktop .center {
+  height: 350px;
+}
+.masktop .center .myscroll {
+  top: 40px;
+  height: 350px;
+}
+.masktop .center .myscroll .lists li {
+  text-align: center;
+}
+.masktop .center .myscroll .lists li::after {
+  left: 0;
+}
+.masktop .bottom {
+  height: 40px;
+  background-color: #e2e2e2;
+  border-radius: 0 0 12px 12px;
+  font-family: "微软雅黑";
+  font-size: 16px;
+  text-align: center;
+  line-height: 40px;
+  color: #000;
+}
+.masktop .bottom .more {
+  height: 40px;
+  line-height: 40px;
+  color: #fc9f12;
+  font-size: 12px;
+  margin-right: 8px;
+}
+.littlemask {
+  width: 184px;
+  height: 200px;
+  position: absolute;
+  right: 2px;
+  top: 45px;
+  z-index: 12;
+  border-radius: 10px;
+  display: none;
+}
+.littlemask div {
+  border-radius: 10px;
+  z-index: 12;
+}
+.littlemask ul {
+  border-radius: 10px;
+}
+.littlemask li {
+  height: 28px;
+  font-size: 12px;
+  line-height: 28px;
+  color: #5f5f5f;
+  padding: 0;
+  text-indent: 30px;
+}
+.littlemask li::after {
+  left: 0;
+}
+.littlemask li:nth-of-type(1) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px 1px;
+  border-radius: 10px 10px 0 0;
+}
+.littlemask li:nth-last-of-type(1) {
+  border-radius: 0 0 10px 10px;
+}
+.littlemask li:nth-of-type(2) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -26px;
+}
+.littlemask li:nth-of-type(3) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -51px;
+}
+.littlemask li:nth-of-type(4) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -78px;
+}
+.littlemask li:nth-of-type(5) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -105px;
+}
+.littlemask li:nth-of-type(6) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -131px;
+}
+.littlemask li:nth-of-type(7) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -158px;
+}
+.littlemask li:nth-of-type(8) {
+  background-image: url(../images/icon2.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: 1px -184px;
+  border-radius: 0 0 10px 10px;
+}

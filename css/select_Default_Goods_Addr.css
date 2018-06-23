@@ -1,0 +1,62 @@
+body {
+  background-color: #fff;
+}
+#scrollCon {
+  margin-top: 50px;
+  margin-bottom: 53px;
+}
+#scrollCon li:after {
+  left: 0;
+}
+#scrollCon h3 {
+  font-size: 18px;
+  font-family: "微软雅黑";
+  font-weight: 400;
+}
+#scrollCon #list::after {
+  height: 0;
+}
+#scrollCon #list li {
+  padding: 4px 8px;
+  border-bottom: 1px solid #f0f0f2;
+}
+#scrollCon #list li .posi {
+  font-size: 14px;
+  color: #979797;
+}
+#scrollCon #list li .posi span.fl {
+  padding-top: 16px;
+}
+#scrollCon #list li .posi .mui-icon {
+  font-family: Muiicons;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  display: inline-block;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  color: #21bdf9;
+}
+#scrollCon #list li .posi .posibtn {
+  padding-top: 16px;
+  width: 90px;
+}
+#scrollCon #list li .rightbox {
+  margin-top: 12px;
+}
+#scrollCon #list li .rightbox input::before {
+  color: #21bdf9;
+}
+.surebox {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  border-top: 1px solid #F0F0F2;
+}
+.surebox button.sure {
+  height: 40px;
+  line-height: 10px;
+  width: 90%;
+  margin: 6px 0px 6px 16px;
+}

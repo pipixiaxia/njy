@@ -1,0 +1,68 @@
+body {
+    background-color: #fff;
+}
+
+#scrollCon {
+    margin-top: 50px;
+    margin-bottom: 53px;
+    li:after {
+        left: 0;
+    }
+    h3 {
+        font-size: 18px;
+        font-family: "微软雅黑";
+        font-weight: 400;
+    }
+    #list {
+        &::after {
+            height: 0;
+        }
+        li {
+            padding: 4px 8px;
+            border-bottom: 1px solid #f0f0f2;
+            .posi {
+                font-size: 14px;
+                color: #979797;
+                span.fl {
+                    padding-top: 16px;
+                }
+                .mui-icon {
+                    font-family: Muiicons;
+                    font-size: 16px;
+                    font-weight: 400;
+                    font-style: normal;
+                    line-height: 1;
+                    display: inline-block;
+                    text-decoration: none;
+                    -webkit-font-smoothing: antialiased;
+                    color: #21bdf9;
+                }
+                .posibtn {
+                    padding-top: 16px;
+                    width: 90px;
+                }
+            }
+            .rightbox {
+                margin-top: 12px;
+                input {
+                    &::before {
+                        color: #21bdf9;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.surebox {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    border-top: 1px solid #F0F0F2;
+    button.sure {
+        height: 40px;
+        line-height: 10px;
+        width: 90%;
+        margin: 6px 0px 6px 16px;
+    }
+}
