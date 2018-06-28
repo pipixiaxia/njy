@@ -49,6 +49,40 @@ function getNowDate() {
 	return y + "年" + m + "月" + d + "日";
 }
 
+//获取x年x月x日x时x分x秒
+function getYMDandTime1() {
+	var date = new Date();
+	var y = date.getFullYear();
+	var m = date.getMonth() + 1;
+	var d = date.getDate();
+	var hh = date.getHours();
+	var mm = date.getMinutes();
+	var ss = date.getSeconds();
+	m = m < 10 ? "0" + m : m;
+	d = d < 10 ? "0" + d : d;
+	hh = hh < 10 ? "0" + hh : hh;
+	mm = mm < 10 ? "0" + mm : mm;
+	ss = ss < 10 ? "0" + ss : ss;
+	return y + "年" + m + "月" + d + "日 " + hh + ":" + mm + ":" + ss;
+}
+
+//获取年.月.日.时.分.秒
+function getYMDandTime2() {
+	var date = new Date();
+	var y = date.getFullYear();
+	var m = date.getMonth() + 1;
+	var d = date.getDate();
+	var hh = date.getHours();
+	var mm = date.getMinutes();
+	var ss = date.getSeconds();
+	m = m < 10 ? "0" + m : m;
+	d = d < 10 ? "0" + d : d;
+	hh = hh < 10 ? "0" + hh : hh;
+	mm = mm < 10 ? "0" + mm : mm;
+	ss = ss < 10 ? "0" + ss : ss;
+	return y + "." + m + "." + d + " " + hh + "." + mm + "." + ss;
+}
+
 function getHourMinute() {
 	var date = new Date();
 	var h = date.getHours();
@@ -296,3 +330,20 @@ function getinputNumber(dom) {
 	}
 }
 //***************使text输入框只能输入数字*******
+
+//**********使textarea输入框自动变高**********
+function textAreaAutoHeight() {
+	var rows = 2;
+	var cols = 24;
+
+	$("body").on("input", "textarea", function() {
+		var _this = this;
+		console.log(this.value.length+"----"+(rows * cols - 1))
+		if(this.value.length == rows * cols - 1) {
+			rows = rows + 1;
+			$(_this).attr("rows", rows);
+		}
+	})
+
+}
+//**********使textarea输入框自动变高**********

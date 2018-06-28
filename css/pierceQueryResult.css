@@ -133,7 +133,8 @@ ul li {
 .bgcolor9 {
   background-color: #f0f9e6;
 }
-.deltable {
+.deltable,
+.shenpi {
   width: 100%;
   position: absolute;
   bottom: 0;
@@ -141,7 +142,8 @@ ul li {
   background-color: #fff;
   text-align: center;
 }
-.deltable button {
+.deltable button,
+.shenpi button {
   height: 40px;
   line-height: 10px;
   width: 90%;

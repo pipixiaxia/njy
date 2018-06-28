@@ -3,7 +3,7 @@ body {
 }
 #wrapper {
   position: absolute;
-  top: 45px;
+  top: 44px;
   bottom: 53px;
   left: 0;
   width: 100%;
@@ -19,23 +19,18 @@ body {
   height: 0;
 }
 #wrapper ul li {
-  height: 42px;
-  line-height: 42px;
+  height: 50px;
+  line-height: 50px;
   padding-top: 0px;
   padding-bottom: 0px;
   border-bottom: 1px solid #e7e7e7;
   background-color: #fff;
 }
-#wrapper ul li div.fr {
-  width: 70%;
-  height: 50px;
-}
-#wrapper ul li div.fr .mui-icon {
+#wrapper ul li div .mui-icon {
   font-size: 18px;
   color: #21bdf9;
 }
-#wrapper ul li div.fr input[type=number],
-#wrapper ul li div.fr input[type=text] {
+#wrapper ul li input {
   height: 30px;
   line-height: 30px;
   padding: 0;
@@ -50,7 +45,9 @@ body {
   margin: 0;
   padding: 0;
   border: none;
-  font-size: 12px;
+}
+#wrapper ul li:nth-of-type(1) {
+  margin-top: 12px;
 }
 .surebox {
   width: 100%;
@@ -73,29 +70,28 @@ body {
   color: red;
   font-size: 0.8pc;
 }
-.picbtn {
+#picbtn {
   height: 80px !important;
 }
-.picbtn div {
+#picbtn div {
   color: #000;
-  height: 80px !important;
+  height: 80px;
   line-height: 80px;
-  background-color: #fff;
 }
-.picbtn a {
-  margin: 0 !important;
-  padding: 0 !important;
-  color: #21BDF9 !important;
+#picbtn a {
+  margin: 0;
+  padding: 0;
+  color: #21BDF9;
 }
-.picbtn a span.photobox {
+#picbtn a span.photobox {
   height: 75px;
   margin-top: 2px;
   display: inline-block;
 }
-.picbtn a span.photobox img {
+#picbtn a span.photobox img {
   height: 75px;
   vertical-align: middle;
 }
-.picbtn a span.photoicon {
+#picbtn a span.photoicon {
   vertical-align: middle;
 }

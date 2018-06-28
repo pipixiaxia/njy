@@ -213,6 +213,23 @@
 						};
 						tr += "</tr>";
 					});
+				} else if(allData.dw === "audit") {
+					$("#shenpi").remove();
+					$("body").append("<div class='shenpi'><button id='shenpi' type='button' class='mui-btn mui-btn-primary'>审批</button></div>");
+					dataArr[0].forEach(function(item, index) {
+						tr += "<tr  sjcName='" + item[item.length - 1].split("`")[0] + "' spbh='" + item[item.length - 1].split("`")[1] + "' flag='" + item[0] + "' dw='" + allData.dw + "' class='trBtn bgcolor" + item[0] + "'>"
+						for(var i = 1; i < item.length - 1; i++) {
+							if(font[i - 1] == 11) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] == 12) {
+								lh = parseInt(font[i - 1]) + 4;
+							} else if(font[i - 1] > 12) {
+								lh = parseInt(font[i - 1]) + 6;
+							}
+							tr += "<td class='textAlign" + allData.alignment[i - 1] + " color" + (i == 1 ? item[0] : 1) + "' style='font-size:" + font[i - 1] + "px; width:" + allData.col_width[i - 1] + "; line-height:" + lh + "px'>" + item[i] + "</td>";
+						};
+						tr += "</tr>";
+					});
 				} else {
 					dataArr[0].forEach(function(item, index) {
 						tr += "<tr class='trBtn bgcolor" + item[0] + " dw='" + allData.dw + "''>"
@@ -313,6 +330,16 @@
 						});
 					}
 				}, "div");
+			});
+			
+			mui("body").on("tap", "#shenpi", function() { //审批
+				mui.openWindow({
+					url: "shenpi.html",
+					id: "shenpi",
+					waiting: {
+						autoShow: false
+					}
+				});
 			});
 
 			mui("#header").on("tap", "#setting", function() { //右上角setting

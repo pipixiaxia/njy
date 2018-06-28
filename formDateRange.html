@@ -303,7 +303,7 @@
 					div += "<div class='setting' style='width: 100%;margin:0 auto;margin-top:14px;'>设置</div>";
 					div += "</div>";
 					$("#content").append(div);
-				} else if(search.indexOf("cs=two") > -1) {
+				} else {
 					$("#content").empty();
 					var div = "<div class='startDate dataPicker'>";
 					div += "<span class='font'>开始日期</span>";
@@ -406,7 +406,7 @@
 				//创建tbody
 				var tr = "";
 				var lh = 15;
-				if(allData.dw === "delete" || allData.dw === "true" || allData.dw === "edit" || allData.dw === "tel") {
+				if(allData.dw === "delete" || allData.dw === "true" || allData.dw === "edit" || allData.dw === "tel" || allData.dw === "audit") {
 					dataArr.forEach(function(item, index) {
 						tr += "<tr  sjcName='" + item[item.length - 1].split("`")[0] + "' spbh='" + item[item.length - 1].split("`")[1] + "' flag='" + item[0] + "' class='trBtn bgcolor" + item[0] + "'>"
 						for(var i = 1; i < item.length - 1; i++) {
@@ -486,6 +486,7 @@
 			mui("table").on("tap", '.trBtn', function() {
 				var _this = this;
 				var Result = JSON.parse(localStorage.getItem("Result"));
+//				localStorage.setItem("wid", plus.webview.currentWebview().id);
 				var flag = _this.getAttribute("flag");
 				var sjcName = _this.getAttribute("sjcName");
 				var spbh = _this.getAttribute("spbh");
@@ -499,12 +500,23 @@
 						endnq = selddlb2.data[1];
 					}
 				}
-				if(Result.dw === "true" && flag === "0") { //去掉非穿透、小计、合计
-					if(sjcName.indexOf(":") > 1) {
+				if((Result.dw === "true" && flag === "0")) { //去掉非穿透、小计、合计
+					if(sjcName.indexOf(":") != -1) {
 						localStorage.setItem("sjcNameJson", sjcName); //存json
 						mui.openWindow({
 							url: "penetrateGroup.html",
 							id: "penetrateGroup",
+							waiting: {
+								autoShow: false
+							}
+						});
+					} else if(sjcName.indexOf("_edit") != -1){
+						var newDateObj = getnqrq(startnq, endnq, spbh);
+						localStorage.setItem("sjcNameArr", JSON.stringify([sjcName])); //存数据窗名数组
+						localStorage.setItem("newDateObjArr", JSON.stringify([newDateObj])); //存统计条件数组
+						mui.openWindow({
+							url: "multibill.html",
+							id: "multibill",
 							waiting: {
 								autoShow: false
 							}

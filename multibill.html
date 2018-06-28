@@ -9,7 +9,7 @@
 		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
 		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
-		<link rel="stylesheet" type="text/css" href="css/multiedit.css" />
+		<link rel="stylesheet" type="text/css" href="css/multibill.css" />
 		<style>
 			.mui-preview-image.mui-fullscreen {
 				position: fixed;
@@ -203,7 +203,7 @@
 			</div>
 		</div>
 		<div class="surebox">
-			<button id="sure" type="button" class="sure mui-btn mui-btn-primary">确定</button>
+			<button id="delete" type="button" class="sure mui-btn mui-btn-primary">删除</button>
 		</div>
 		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
 			<ul class="mui-table-view">
@@ -234,18 +234,19 @@
 					longtap: true
 				}
 			});
-
+			
 			var sjcName = localStorage.getItem("sjcName");
-			var newDateObj = localStorage.getItem("newDateObj");
+			var newDateObjArr = JSON.parse(localStorage.getItem("newDateObjArr")); //取统计条件数组
+			var newDateObj = newDateObjArr[newDateObjArr.length - 1]; //取统计条件数组最后一条数据
 
 			vdn.post({
 				"method": "nvo_bi.get_dw_edit",
-				"params": [sjcName, newDateObj]
+				"params": [sjcName, JSON.stringify(newDateObj)]
 			}, function(data) {
+				console.log(JSON.parse(data.Result))
 				var result = JSON.parse(data.Result);
 				localStorage.setItem("result", data.Result);
-				createDom(result)
-				console.log(result)
+				createDom(result);
 			}, function(err) {
 				alert("Code:" + err.Code + ", Message" + err.Message);
 			});
@@ -261,58 +262,23 @@
 				var row = result.row;
 				var style = result.style;
 				var title = result.titile;
+				var key =  result.key;
 				$("header h1").html(title);
-				if(localStorage.getItem("newDateObj")) { //编辑有newDateObj,新增没有
-					$("#header").append("<a id='delete' class='mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right'></a>");
-				}
 
 				$("#container").append("<ul id='list1' class='ul-con mui-table-view'></ul>"); //非明细部分
 				dataEach(0, row.length - count, 0, "#list1");
 
 				data.forEach(function(value, index) { //明细部分
 					$("#container").append("<ul id='list" + (index + 2) + "' class='ul-con mui-table-view'></ul>");
-					$("#list" + (index + 2)).append("<li class='del mui-table-view-cell' style='height: 20px;line-height: 20px;width: 100%;color:#ccc;background-color: #F0F0F2;'><span class='fl'>明细" + (index + 1) + "</span><span class='fr'>删除</span></li>");
+					$("#list" + (index + 2)).append("<li class='mui-table-view-cell' style='height: 20px;line-height: 20px;width: 100%;color:#ccc;background-color: #F0F0F2;'><span class='fl'>明细" + (index + 1) + "</span></li>");
 					dataEach(row.length - count, row.length, index, "#list" + (index + 2));
 				});
-
-				var div = "<div id='add' style='height: 50px;line-height: 50px;background-color: #fff;color: #21bdf9;text-align: center;width: 100%;'>+增加明细</div>";
-				$("#container").append(div);
+				
+				if(key === "audit") {
+					$("#delete").remove();
+					$("body").append("<div class='surebox'><button id='shenpi' type='button' class='sure mui-btn mui-btn-primary'>审批</button></div>");
+				}
 			}
-
-			mui("#container").on("tap", "#add", function() { //增加明细
-				var result = JSON.parse(localStorage.getItem("result"));
-				var data = result.data;
-				var count = Number(result.detail);
-				var label = result.label;
-				var row = result.row;
-				var style = result.style;
-
-				var uls = $("#container").children("ul");
-				$("#add").before("<ul id='list" + (uls.length + 1) + "' class='ul-con mui-table-view'></ul>");
-				dataEach(row.length - count, row.length, -1, "#list" + (uls.length + 1));
-				$("ul .del").remove();
-				$("#container ul").each(function(i, uldom) {
-					if(i > 0) {
-						$($(uldom).children()[0]).before("<li class='del mui-table-view-cell' style='height: 20px;line-height: 20px;width: 100%;color:#ccc;background-color: #F0F0F2;'><span class='fl'>明细" + i + "</span><span class='fr'>删除</span></li>")
-					}
-				})
-			});
-
-			mui("#container").on("tap", ".del", function() { //删除明细
-				var _this = this;
-				var info = $(this).children()[0].innerHTML;
-				mui.confirm("", "确定删除" + info + "？", ['取消', '确定'], function(e) {
-					if(e.index == 1) {
-						$(_this).parent().remove();
-						$("#container ul").each(function(i, uldom) {
-							if(i > 0) {
-								uldom.children[0].children[0].innerHTML = '明细' + i;
-							}
-							uldom.id = 'list' + (i + 1);
-						});
-					}
-				}, "div");
-			});
 
 			mui("#container").on("tap", ".ddlb1", function() { //一级联动
 				var result = JSON.parse(localStorage.getItem("result"));
@@ -335,7 +301,7 @@
 					});
 				}
 			});
-
+			
 			mui("#container").on("tap", ".date", function() { //日期选择
 				var item = this.getAttribute("item");
 				var _this = this;
@@ -356,7 +322,7 @@
 				});
 			});
 
-			mui("#container").on("tap", ".htmbtn", function() { //点击之后存储被点的元素
+			mui("#container").on("tap", ".htmbtn", function() {//点击之后存储被点的元素
 				localStorage.setItem("ulId", $(this).parent().attr("id"));
 				localStorage.setItem("w", plus.webview.currentWebview().id);
 				var htmlLink = this.getAttribute("htmlLink");
@@ -369,29 +335,29 @@
 					}
 				});
 			});
-
-			function getChangeInfo() { //获取select.html页面选中项填入
+			
+			function getChangeInfo(){//获取select.html页面选中项填入
 				var ulId = localStorage.getItem("ulId");
-				var htmlLink = localStorage.getItem("htmlLink");
+				var htmlLink  = localStorage.getItem("htmlLink");
 				var gysInfo = JSON.parse(localStorage.getItem("gysInfo"));
 				var gysmc = gysInfo.gysmc;
 				var gysbh = gysInfo.gysbh;
-				$("#" + ulId).children().each(function(index, li) { //遍历被点击的ul，取出里面带htmlLink参数的li对比
-					if($(li).attr("htmlLink") == htmlLink) {
+				$("#"+ulId).children().each(function(index, li){//遍历被点击的ul，取出里面带htmlLink参数的li对比
+					if($(li).attr("htmlLink") == htmlLink){
 						$(li).attr("val", gysmc);
 						$(li).find(".mcinfo").html(gysmc);
-						if($(li).next().hasClass("bh")) {
+						if($(li).next().hasClass("bh")){							
 							$(li).next().attr("val", gysbh);
 						}
 					}
 				});
 			}
-
-			mui("#container").on("tap", "a", function() { //存储被点击照片行的ul的id
+			
+			mui("#container").on("tap", "a", function(){//存储被点击照片行的ul的id
 				var ulId = $(this).parent().parent().attr("id");
 				localStorage.setItem("ulId", ulId);
 			});
-
+			
 			mui('#picture').on('tap', 'li>a', function() { //拍照+上传照片
 				var a = this,
 					parent;
@@ -445,12 +411,12 @@
 											var wz = JSON.parse(data.Result).wz;
 											var imgPathArr = wz.split("`");
 											var ulId = localStorage.getItem("ulId");
-											$("#" + ulId).find(".imgcon").empty();
+											$("#"+ulId).find(".imgcon").empty();
 											imgPathArr.forEach(function(value, index) {
 												var dom = "<img class='img" + index + "' style='height:80px' src='http://xjkjhunter.asuscomm.com:8088" + value + "' data-preview-src='' data-preview-group='1'>";
-												$("#" + ulId).find(".imgcon").append(dom);
+												$("#"+ulId).find(".imgcon").append(dom);
 											});
-											$("#" + ulId).children(".picbtn").attr("val", wz);
+											$("#"+ulId).children(".picbtn").attr("val", wz);
 										}
 									}, function(err) {
 										alert("Code:" + err.Code + ", Message" + err.Message);
@@ -478,7 +444,7 @@
 			});
 
 			mui("body").on("tap", ".picbtn", function(e) { //点照片行
-				if(this.getAttribute("val") === "") {
+				if(this.getAttribute("val") === ""){
 					return false;
 				}
 				mui.trigger($(this).find(".img0")[0], "tap");
@@ -508,8 +474,8 @@
 					}, "div");
 				}
 			});
-
-			mui(".surebox").on("tap", "#sure", function() { //确定
+			
+			mui(".surebox").on("tap", "#sure", function() {//确定
 				var firstObj = {};
 				var totalArr = [];
 				var flag = false;
@@ -558,8 +524,8 @@
 					}, function(data) {
 						if(data.Result === 'ok') {
 							mui.back();
-							var wid = localStorage.getItem("wid");
-							plus.webview.getWebviewById(wid).evalJS("loadAction()");
+							var w = plus.webview.getWebviewById("formDateRange.html");
+							w.evalJS("loadAction()");
 						} else {
 							mui.alert(data.Result);
 						}
@@ -568,68 +534,21 @@
 					});
 				}
 			});
-
-			mui("header").on("tap", "#delete", function() { //右上角删除
-				var firstObj = {};
-				var totalArr = [];
-				var flag = false;
-				var spbh = JSON.parse(localStorage.getItem("newDateObj")).penetrate;
-				$("#container ul").each(function(i, uldom) {
-					if(i === 0) {
-						$(uldom).children().each(function(j, lidom) { //第一个ul数据
-							var item = $(lidom).attr("item");
-							var val = $(lidom).attr("val");
-							if(item) {
-								firstObj[item] = val;
-							}
-						});
-					} else {
-						var otherObj = {};
-						$(uldom).children().each(function(k, lidom) { //其它ul数据
-							var item = $(lidom).attr("item");
-							var val = $(lidom).attr("val");
-							var required = lidom.getAttribute("required");
-							if(item) {
-								if(required == "true" && !val) {
-									flag = true;
-								} else {
-									otherObj[item] = val;
-									for(key in firstObj) {
-										otherObj[key] = firstObj[key];
-									}
-								}
-							}
-						});
-						totalArr.push(otherObj);
+			
+			$("#wrapper").on("input", ".ninput", function(){
+				getinputNumber(this)
+			});
+			
+			mui("body").on("tap", "#shenpi", function() { //审批
+				var compute_1 = $("#container").children().last().children().last().attr("val");//这个数据作为审批页面的json
+				localStorage.setItem("compute_1", compute_1);
+				mui.openWindow({
+					url: "shenpi.html",
+					id: "shenpi",
+					waiting: {
+						autoShow: false
 					}
 				});
-				mui.confirm("", "确定删除" + spbh + "？", ['取消', '确定'], function(e) {
-					if(e.index == 1) {
-						vdn.post({
-							"method": "nvo_edit.exec_dp",
-							"params": [sjcName + '_del', JSON.stringify(totalArr)]
-						}, function(data) {
-							if(data.Result === "ok") {
-								mui.toast("删除" + spbh + "成功")
-								mui.back();
-								var wid = localStorage.getItem("wid");
-								plus.webview.getWebviewById(wid).evalJS("loadAction()");
-							} else {
-								mui.alert(data.Result);
-							}
-						}, function(err) {
-							alert("Code:" + err.Code + ", Message" + err.Message);
-						});
-					}
-				}, "div");
-			});
-
-			mui(".surebox").on("tap", "#back", function() {
-				mui.back();
-			});
-
-			$("#wrapper").on("input", ".ninput", function() {
-				getinputNumber(this)
 			});
 
 			function dataEach(j, len, n, dom) { //遍历开始位置、遍历长度、data数据索引、ul的id
@@ -736,12 +655,14 @@
 						li += "</div>";
 						li += "</li>";
 						$(dom).append(li);
-					} else if(row[i][1] === "isedit") {
-						if(showdata == "0") {
-							$(".surebox").empty();
-							$(".surebox").append("<button id='back' type='button' class='sure mui-btn mui-btn-primary'>返回</button>");
-							$("#delete").remove();
-						}
+					} else if(row[i][1] === "mtext"){
+						var li = "<li style='height:auto;line-height:inherit;' class='mui-table-view-cell clearfloat' item=" + row[i][0] + " required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' val='" + showdata + "'>";
+						li += "<div style='height:66px;line-height:66px;' class='fl " + (label[i].indexOf("*") >= 0 ? 'starflag' : '') + "'>" + (label[i].indexOf("*") >= 0 ? label[i].slice(0, -1) : label[i]) + "</div>";
+						li += "<div class='fr' style='height:auto;text-align:right;'>";
+						li += "<span style='color:#999'>"+ showdata +"</span>"
+						li += "</div>";
+						li += "</li>";
+						$(dom).append(li);
 					}
 				}
 			}

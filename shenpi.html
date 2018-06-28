@@ -10,7 +10,7 @@
 		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
 		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
-		<link rel="stylesheet" type="text/css" href="css/edit.css" />
+		<link rel="stylesheet" type="text/css" href="css/shenpi.css" />
 		<style>
 			.mui-preview-image.mui-fullscreen {
 				position: fixed;
@@ -197,7 +197,6 @@
 		<header id="header" class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 id="title" class="mui-title"></h1>
-			<!--<a id="delete" class="mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right"></a>-->
 		</header>
 		<div id="wrapper" class="mui-scroll-wrapper">
 			<div class="mui-scroll">
@@ -245,12 +244,11 @@
 				deceleration: 0.0005
 			});
 
-			var sjcName = localStorage.getItem("sjcName");
-			var newDateObj = localStorage.getItem("newDateObj");
-			newDateObj = newDateObj ? newDateObj : "";
+			var compute_1 = localStorage.getItem("compute_1");
+			var compute_1_arr = compute_1.split("`");
 			vdn.post({
 				"method": "nvo_bi.get_dw_edit",
-				"params": [sjcName, newDateObj]
+				"params": [compute_1_arr[0], JSON.stringify({"penetrate": compute_1_arr[1]})]
 			}, function(data) {
 				console.log(JSON.parse(data.Result))
 				createDom(data);
@@ -267,9 +265,6 @@
 				localStorage.setItem("newAddStyle", JSON.stringify(style));
 				var title = Result.titile;
 				$("#header h1").html(title);
-				if(localStorage.getItem("newDateObj")) { //编辑有newDateObj,新增没有
-					$("#header").append("<a id='delete' class='mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right'></a>");
-				}
 				for(var i = 0; i < row.length; i++) {
 					if(row[i][1] === "hide") {
 						var li = "<li style='display:none;' class='hidden mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + data[0][i] + "'>";
@@ -379,7 +374,6 @@
 						if(data[0][i] == "0") {
 							$(".surebox").empty();
 							$(".surebox").append("<button id='back' type='button' class='sure mui-btn mui-btn-primary'>返回</button>");
-							$("#delete").remove();
 						}
 					} else if(row[i][1] === "html") {
 						var li = "<li class='mui-table-view-cell clearfloat htmbtn' htmlLink='" + style[i][1] + "' required='" + (label[i].indexOf("*") >= 0 ? 'true' : 'false') + "' item=" + row[i][0] + " val='" + data[0][i] + "'>";
@@ -395,14 +389,6 @@
 						li += "<div class='fl'>" + label[i] + "</div>";
 						li += "<div class='fr'>";
 						li += "<span class='timebox' style='color:#999;'></span>"
-						li += "</div>";
-						li += "</li>";
-						$("#list").append(li);
-					} else if(row[i][1] === "long") {
-						var li = "<li style='display:none;' class='hidden mui-table-view-cell clearfloat' item=" + row[i][0] + " val='" + data[0][i] + "'>";
-						li += "<div class='fl'>" + label[i] + "</div>";
-						li += "<div class='fr'>";
-						li += "<span>" + data[0][i] + "</span>"
 						li += "</div>";
 						li += "</li>";
 						$("#list").append(li);
@@ -475,11 +461,11 @@
 				}
 			}
 
-			setInterval(function() {//签到时间
+			setInterval(function() { //签到时间
 				$(".timebox").parent().parent().attr("val", getYMDandTime2());
 				$(".timebox").html(getYMDandTime1());
 			}, 1000);
-			
+
 			//textarea框自动变高
 			textAreaAutoHeight();
 
@@ -694,44 +680,6 @@
 
 			$("#wrapper").on("input", ".ninput", function() {
 				getinputNumber(this) //只能输入数字
-			});
-
-			mui("header").on("tap", "#delete", function() { //右上角删除
-				var sjcName = localStorage.getItem("sjcName");
-				var spbh = JSON.parse(localStorage.getItem("newDateObj")).penetrate;
-				var dataObj = {};
-				$('ul .mui-switch').each(function(index, ele) { //循环所有switch
-					var isHas = $(ele).hasClass("mui-active") ? 1 : 0;
-					$(ele).parent()[0].setAttribute("val", isHas); //给父li添加val
-				});
-				$(".ipt").each(function(index, ele) { //循环输入框
-					$(ele).parent().parent().attr("val", ele.value); //给父li添加val
-				});
-				$(".ul-con").children().each(function(index, value) { //遍历所有li获取item和val
-					var item = value.getAttribute("item");
-					var val = value.getAttribute("val");
-					dataObj[item] = val;
-				});
-				alert(JSON.stringify(dataObj))
-				mui.confirm("", "确定删除" + spbh + "？", ['取消', '确定'], function(e) {
-					if(e.index == 1) {
-						vdn.post({
-							"method": "nvo_edit.exec_dp",
-							"params": [sjcName + '_del', JSON.stringify(dataObj)]
-						}, function(data) {
-							if(data.Result === "ok") {
-								mui.toast("删除" + spbh + "成功")
-								mui.back();
-								var wid = localStorage.getItem("wid");
-								plus.webview.getWebviewById(wid).evalJS("loadAction()");
-							} else {
-								mui.alert(data.Result);
-							}
-						}, function(err) {
-							alert("Code:" + err.Code + ", Message" + err.Message);
-						});
-					}
-				}, "div");
 			});
 		</script>
 	</body>
